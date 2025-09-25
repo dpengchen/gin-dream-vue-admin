@@ -3,9 +3,9 @@ package main
 import (
 	"dream-vue-admin/config"
 	"dream-vue-admin/global"
+	"dream-vue-admin/pkg/casbin"
 	"dream-vue-admin/pkg/gorm"
 	"dream-vue-admin/pkg/zap"
-	"dream-vue-admin/router"
 )
 
 func main() {
@@ -15,7 +15,9 @@ func main() {
 	global.Log = zap.InitZapLog()
 	//初始化数据库
 	global.Db = gorm.InitGorm()
+	//初始化casbin
+	global.Enforcer = casbin.InitCasbin(global.Db)
 
 	//启动服务
-	router.InitRouterAndRun()
+	//router.InitRouterAndRun()
 }

@@ -1,22 +1,22 @@
 server:
-  port: 9300
+  port: 6970
   name: "dream-vue-admin"
   logPath: "./logs"
   logLevel: "debug"
 
 database:
-  ip: "127.0.0.1"
+  ip: "192.168.192.170"
   port: 3306
   username: "root"
-  password: "123456"
+  password: "root"
   database: "dream-vue-admin"
 
 redis:
-  ip: "127.0.0.1"
+  ip: "192.168.192.170"
   port: 6379
   password: ""
   database: 0
 
 jwt:
   secretKey: "dream-vue-admin&dpengchen@163.com"
-  expire: 1440
+  expire: 31

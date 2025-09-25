@@ -41,7 +41,7 @@ func (w *roccLogWriter) Write(p []byte) (n int, err error) {
 	return w.file.Write(p)
 }
 
-func InitZapLog() *zap.Logger {
+func InitZapLog() *zap.SugaredLogger {
 
 	cfg := zap.NewDevelopmentConfig()
 	cfg.EncoderConfig.EncodeTime = zapcore.TimeEncoderOfLayout("2006-01-02 15:04:05")
@@ -73,5 +73,5 @@ func InitZapLog() *zap.Logger {
 	logger := zap.New(core, zap.AddCaller())
 	zap.ReplaceGlobals(logger)
 
-	return logger
+	return logger.Sugar()
 }

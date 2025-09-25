@@ -22,7 +22,7 @@ func InitRouterAndRun() {
 	}
 
 	//启动服务
-	if err := engine.Run(fmt.Sprintf(":%d", global.Cfg.Server.Port)); err != nil {
+	if err := engine.Run(fmt.Sprintf("0.0.0.0:%d", global.Cfg.Server.Port)); err != nil {
 		log.Panicln("启动服务失败：", err.Error())
 	}
 }

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 
+	gormadapter "github.com/casbin/gorm-adapter/v3"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -40,5 +41,18 @@ func InitGorm() *gorm.DB {
 		return nil
 	}
 
+	//注册模型
+	initModel(db)
+
 	return db
+}
+
+func initModel(db *gorm.DB) {
+	err := db.AutoMigrate(
+		// casbin记录权限
+		&gormadapter.CasbinRule{},
+	)
+	if err != nil {
+		log.Panicf("初始化Gorm模型失败：%s", err.Error())
+	}
 }
