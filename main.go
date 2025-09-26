@@ -6,6 +6,7 @@ import (
 	"dream-vue-admin/pkg/casbin"
 	"dream-vue-admin/pkg/gorm"
 	"dream-vue-admin/pkg/zap"
+	"dream-vue-admin/router"
 )
 
 func main() {
@@ -19,5 +20,5 @@ func main() {
 	global.Enforcer = casbin.InitCasbin(global.Db)
 
 	//启动服务
-	//router.InitRouterAndRun()
+	router.InitRouterAndRun()
 }
