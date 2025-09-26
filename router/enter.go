@@ -2,7 +2,8 @@ package router
 
 import (
 	"dream-vue-admin/global"
-	"dream-vue-admin/router/user"
+	"dream-vue-admin/middleware"
+	"dream-vue-admin/router/initalize"
 	"fmt"
 	"log"
 
@@ -13,12 +14,13 @@ import (
 func InitRouterAndRun() {
 	engine := gin.Default()
 
-	//注册路由
-	//自动CURD之后需要在此注册路由才可以
 	{
-		v1group := engine.Group("/v1")
-		//用户接口
-		user.InitUserApiRouter(v1group)
+		group := engine.Group("")
+		// 使用鉴权中间件
+		group.Use(middleware.Auth())
+		//注册路由
+		//v1版本
+		initalize.InitV1Router(group)
 	}
 
 	//启动服务

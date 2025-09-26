@@ -2,6 +2,7 @@ package gorm
 
 import (
 	"dream-vue-admin/global"
+	"dream-vue-admin/models/system_model"
 	"fmt"
 	"log"
 
@@ -51,6 +52,10 @@ func initModel(db *gorm.DB) {
 	err := db.AutoMigrate(
 		// casbin记录权限
 		&gormadapter.CasbinRule{},
+
+		//字典
+		&system_model.Dict{},
+		&system_model.DictValue{},
 	)
 	if err != nil {
 		log.Panicf("初始化Gorm模型失败：%s", err.Error())

@@ -8,6 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -55,7 +56,8 @@ func Auth() gin.HandlerFunc {
 
 		//设置当前用户id到上下文
 		userInfoStr := loginCache.Val()
-		c.Set(constants.GinContextLoginUserIdKey, sub)
+		userId, _ := strconv.Atoi(sub)
+		c.Set(constants.GinContextLoginUserIdKey, userId)
 		//TODO 后期这里更改为结构体而不是字符串
 		c.Set(constants.GinContextLoginUserInfoKey, userInfoStr)
 

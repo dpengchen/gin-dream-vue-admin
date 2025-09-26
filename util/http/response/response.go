@@ -1,6 +1,7 @@
 package response
 
 import (
+	"dream-vue-admin/models/core"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -34,4 +35,19 @@ func Fail(c *gin.Context, code int, msg string) {
 // FailWithInternalError 错误状态码500
 func FailWithInternalError(c *gin.Context, msg string) {
 	Fail(c, http.StatusInternalServerError, msg)
+}
+
+// SuccessWithList 响应成功返回列表数据
+func SuccessWithList(c *gin.Context, list any, total *int64, query *core.BaseQuery) {
+	totalPage := *total / int64(query.Size)
+	if *total%int64(query.Size) != 0 {
+		totalPage++
+	}
+	Success(c, gin.H{
+		"list":      list,
+		"total":     total,
+		"totalPage": totalPage,
+		"page":      query.Page,
+		"size":      query.Size,
+	})
 }
