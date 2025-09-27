@@ -1,10 +1,12 @@
-<script setup lang="ts">
-</script>
-
 <template>
-  <a-config-provider >
-    <router-view />
-  </a-config-provider>
+  <router-view />
 </template>
 
-<style scoped></style>
+<style lang="scss" >
+html,
+body,
+#app {
+  width: 100vw;
+  height: 100vh;
+}
+</style>

@@ -44,6 +44,7 @@ func (w *roccLogWriter) Write(p []byte) (n int, err error) {
 func InitZapLog() *zap.SugaredLogger {
 
 	cfg := zap.NewDevelopmentConfig()
+	zap.NewProductionConfig()
 	cfg.EncoderConfig.EncodeTime = zapcore.TimeEncoderOfLayout("2006-01-02 15:04:05")
 
 	var writer = roccLogWriter{

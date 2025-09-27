@@ -1,0 +1,6 @@
+@import "tailwindcss";
+
+/* 添加下面的代码 */
+svg {
+  vertical-align: baseline;
+}
