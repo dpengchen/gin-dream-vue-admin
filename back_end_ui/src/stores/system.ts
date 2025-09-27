@@ -10,8 +10,11 @@ export const useSystemStore = defineStore(
     const setSystem = (info: SystemInfo) => {
       system.value = info
     }
+    const getThemeColor = (dark: string, light: string) => {
+      return system.value.them === 'dark' ? dark : light
+    }
 
-    return { system, setSystem }
+    return { system, setSystem, getThemeColor }
   },
   { persist: true },
 )

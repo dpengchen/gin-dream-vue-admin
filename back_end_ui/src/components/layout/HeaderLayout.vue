@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { UserOutlined, MenuFoldOutlined } from '@ant-design/icons-vue'
+import { Sun as IconSun, Moon as IconMoon } from '@icon-park/vue-next'
 import { SettingOutlined } from '@ant-design/icons-vue'
 import { reactive } from 'vue'
 import { useSystemStore } from '@/stores/system.ts'
@@ -15,6 +16,10 @@ const emit = defineEmits(['toggleSide'])
 
 const changePrimaryColor = (e: Event) => {
   systemForm.form.colorPrimary = (e.target! as HTMLInputElement).value
+}
+
+const changeTheme = () => {
+  systemForm.form.them = systemForm.form.them == 'light' ? 'dark' : 'light'
 }
 </script>
 
@@ -50,6 +55,20 @@ const changePrimaryColor = (e: Event) => {
     </div>
 
     <div class="right flex items-center">
+      <a-button shape="circle" @click="changeTheme">
+        <template #icon>
+          <div class="flex items-center justify-center">
+            <IconSun
+              theme="outline"
+              size="18"
+              :fill="systemStore.getThemeColor('#fff', '#141414')"
+              v-if="systemForm.form.them == 'dark'"
+            />
+            <IconMoon theme="outline" size="18" fill="#141414" v-else />
+          </div>
+        </template>
+      </a-button>
+      <div class="w-2"></div>
       <a-button shape="circle" @click="systemForm.visible = true" class="h-fit" size="64">
         <template #icon>
           <SettingOutlined />
@@ -76,7 +95,7 @@ const changePrimaryColor = (e: Event) => {
   <a-drawer v-model:open="systemForm.visible">
     <a-form :label-col="{ style: { width: '60px' } }">
       <a-form-item label="主题色">
-        <input type="color" @change="changePrimaryColor" />
+        <input type="color" :value="systemForm.form.colorPrimary" @change="changePrimaryColor" />
       </a-form-item>
       <a-form-item label="模式">
         <a-radio-group v-model:value="systemForm.form.them">
@@ -114,8 +133,8 @@ const changePrimaryColor = (e: Event) => {
       </a-form-item>
       <a-form-item label="侧边栏">
         <a-radio-group v-model:value="systemForm.form.showSide">
-          <a-radio :value="true">显示</a-radio>
-          <a-radio :value="false">不显示</a-radio>
+          <a-radio :value="true">侧边显示</a-radio>
+          <a-radio :value="false">顶部显示</a-radio>
         </a-radio-group>
       </a-form-item>
       <a-form-item label="(位置)">

@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@ant-design/icons-vue": "^7.0.1",
+    "@icon-park/vue-next": "^1.4.2",
     "@tailwindcss/vite": "^4.1.13",
     "ant-design-vue": "^4.2.6",
     "pinia": "^3.0.3",

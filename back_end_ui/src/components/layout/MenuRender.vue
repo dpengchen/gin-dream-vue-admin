@@ -6,7 +6,7 @@ const systemStore = useSystemStore()
 defineProps({
   mode: {
     type: String,
-    default: 'vertical',
+    default: 'inline',
   },
 })
 </script>
@@ -20,24 +20,24 @@ defineProps({
         '!bg-[#07161a]': systemStore.system.them == 'dark',
       }"
     >
-      <a-menu-item>
+      <a-menu-item key="1">
         <DesktopOutlined />
         <span>控制台</span>
       </a-menu-item>
-      <a-menu-item>
+      <a-menu-item key="2">
         <DesktopOutlined />
         <span>控制台</span>
       </a-menu-item>
-      <a-sub-menu>
+      <a-sub-menu key="3">
         <template #title>
           <DesktopOutlined />
           <span>个人中心</span>
         </template>
-        <a-menu-item>
+        <a-menu-item key="3-1">
           <DesktopOutlined />
           <span>个人中心</span>
         </a-menu-item>
-        <a-menu-item>
+        <a-menu-item key="3-2">
           <DesktopOutlined />
           <span>个人中心</span>
         </a-menu-item>
