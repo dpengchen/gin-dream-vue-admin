@@ -68,13 +68,13 @@ const changeTheme = () => {
           </div>
         </template>
       </a-button>
-      <div class="w-2"></div>
+      <div class="w-3"></div>
       <a-button shape="circle" @click="systemForm.visible = true" class="h-fit" size="64">
         <template #icon>
           <SettingOutlined />
         </template>
       </a-button>
-      <div class="w-2"></div>
+      <div class="w-3"></div>
       <a-dropdown class="mb-10">
         <a-avatar size="64">
           <a-icon>
@@ -92,7 +92,7 @@ const changeTheme = () => {
   </a-layout-header>
 
   <!-- 抽屉系统设置 -->
-  <a-drawer v-model:open="systemForm.visible">
+  <a-drawer v-model:open="systemForm.visible" title="系统设置" :close-icon="null">
     <a-form :label-col="{ style: { width: '60px' } }">
       <a-form-item label="主题色">
         <input type="color" :value="systemForm.form.colorPrimary" @change="changePrimaryColor" />

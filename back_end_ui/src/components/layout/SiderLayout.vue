@@ -25,7 +25,7 @@ defineProps({
 
   >
     <div
-      class="logo flex bg-white items-center justify-center m-3 rounded border border-gray-100"
+      class="logo flex  items-center justify-center m-3 rounded border border-gray-100"
       v-if="systemStore.system.layout == '2'"
     >
       <img :src="logo" alt="logo" class="w-[40px] h-[40px]" />

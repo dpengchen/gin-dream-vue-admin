@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { DesktopOutlined } from '@ant-design/icons-vue'
 import { useSystemStore } from '@/stores/system.ts'
+import { Code as IconCode ,Share as IconShare} from '@icon-park/vue-next'
+import IconPackAdapter from '@/components/IconPackAdapter.vue'
 
 const systemStore = useSystemStore()
 defineProps({
@@ -25,23 +27,17 @@ defineProps({
         <span>控制台</span>
       </a-menu-item>
       <a-menu-item key="2">
-        <DesktopOutlined />
-        <span>控制台</span>
+        <IconPackAdapter>
+          <IconCode size="14"/>
+        </IconPackAdapter>
+        <span>代码生成</span>
       </a-menu-item>
-      <a-sub-menu key="3">
-        <template #title>
-          <DesktopOutlined />
-          <span>个人中心</span>
-        </template>
-        <a-menu-item key="3-1">
-          <DesktopOutlined />
-          <span>个人中心</span>
-        </a-menu-item>
-        <a-menu-item key="3-2">
-          <DesktopOutlined />
-          <span>个人中心</span>
-        </a-menu-item>
-      </a-sub-menu>
+      <a-menu-item key="3">
+        <IconPackAdapter>
+          <IconShare size="14"/>
+        </IconPackAdapter>
+        <span>关于我们</span>
+      </a-menu-item>
     </a-menu>
   </div>
 </template>
