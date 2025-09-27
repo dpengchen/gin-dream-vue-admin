@@ -7,7 +7,7 @@ import (
 )
 
 func InitGenerateRouter(v1group *gin.RouterGroup) {
-	group := v1group.Group("/generate")
+	group := v1group.Group("/generate/table")
 	api := generate.NewGeneratorTableApi()
 	{
 		group.POST("", api.Create)

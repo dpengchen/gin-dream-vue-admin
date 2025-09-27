@@ -1,5 +1,5 @@
 server:
-  port: 6970
+  port: 8080
   name: "dream-vue-admin"
   logPath: "./logs"
   logLevel: "debug"
