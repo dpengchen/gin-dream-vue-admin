@@ -1,25 +1,30 @@
 <script setup lang="ts">
-import { UserOutlined, MenuFoldOutlined } from '@ant-design/icons-vue'
+import { UserOutlined, MenuFoldOutlined, ReloadOutlined } from '@ant-design/icons-vue'
 import { Sun as IconSun, Moon as IconMoon } from '@icon-park/vue-next'
 import { SettingOutlined } from '@ant-design/icons-vue'
 import { reactive } from 'vue'
-import { useSystemStore } from '@/stores/system.ts'
 import logo from '@/assets/logo.png'
 import MenuRender from '@/components/layout/MenuRender.vue'
+import { systemInfo, currentBgColor, resetTheme } from '@/utils/theme.ts'
 
-const systemStore = useSystemStore()
 const systemForm = reactive({
   visible: false,
-  form: systemStore.system,
+  form: systemInfo,
 })
 const emit = defineEmits(['toggleSide'])
 
+const changeBgBaseColor = (e: Event) => {
+  systemForm.form.bgBaseColor = (e.target! as HTMLInputElement).value
+}
+const changeDarkBgBaseColor = (e: Event) => {
+  systemForm.form.darkBgBaseColor = (e.target! as HTMLInputElement).value
+}
 const changePrimaryColor = (e: Event) => {
   systemForm.form.colorPrimary = (e.target! as HTMLInputElement).value
 }
 
 const changeTheme = () => {
-  systemForm.form.them = systemForm.form.them == 'light' ? 'dark' : 'light'
+  systemForm.form.theme = systemForm.form.theme == 'light' ? 'dark' : 'light'
 }
 </script>
 
@@ -27,22 +32,22 @@ const changeTheme = () => {
   <a-layout-header
     class="flex justify-between items-center bg-white shadow z-10"
     :class="{
-      '!pl-5': systemStore.system.layout == '1',
-      '!bg-white': systemStore.system.them == 'light',
-      '!bg-[#07161a]': systemStore.system.them == 'dark',
-      'shadow-gray-200/10': systemStore.system.them == 'dark',
+      'flex-row-reverse': systemInfo.showSide && systemInfo.sidePosition == 'right',
+      '!pl-5': systemInfo.layout == '1',
+      'shadow-gray-700': systemInfo.theme === 'dark',
     }"
+    :style="{ 'background-color': currentBgColor }"
   >
     <div class="left flex">
       <div
-        class="logo flex items-center p-1 rounded"
-        v-if="systemStore.system.layout == '1' || !systemStore.system.showSide"
+        class="logo flex items-center p-1 rounded cursor-pointer"
+        v-if="systemInfo.layout == '1' || !systemInfo.showSide"
         @click="emit('toggleSide')"
       >
         <img :src="logo" alt="logo" class="w-[40px] h-[40px]" />
         <span class="text-xl">DreamAdmin</span>
       </div>
-      <div v-else-if="systemStore.system.showSide">
+      <div v-else-if="systemInfo.showSide">
         <a-button @click="emit('toggleSide')">
           <template #icon>
             <MenuFoldOutlined />
@@ -50,7 +55,7 @@ const changeTheme = () => {
         </a-button>
       </div>
       <div class="ml-5">
-        <MenuRender mode="horizontal" v-if="!systemStore.system.showSide" />
+        <MenuRender mode="horizontal" v-if="!systemInfo.showSide" />
       </div>
     </div>
 
@@ -58,12 +63,7 @@ const changeTheme = () => {
       <a-button shape="circle" @click="changeTheme">
         <template #icon>
           <div class="flex items-center justify-center">
-            <IconSun
-              theme="outline"
-              size="18"
-              :fill="systemStore.getThemeColor('#fff', '#141414')"
-              v-if="systemForm.form.them == 'dark'"
-            />
+            <IconSun theme="outline" size="18" fill="#fff" v-if="systemForm.form.theme == 'dark'" />
             <IconMoon theme="outline" size="18" fill="#141414" v-else />
           </div>
         </template>
@@ -92,13 +92,42 @@ const changeTheme = () => {
   </a-layout-header>
 
   <!-- 抽屉系统设置 -->
-  <a-drawer v-model:open="systemForm.visible" title="系统设置" :close-icon="null">
-    <a-form :label-col="{ style: { width: '60px' } }">
+  <a-drawer v-model:open="systemForm.visible" title="系统设置" :close-icon="null" width="500px">
+    <template #extra>
+      <a-button @click="resetTheme">
+        <template #icon> <ReloadOutlined /></template>
+        重置
+      </a-button>
+    </template>
+    <a-form :label-col="{ style: { width: '80px' } }">
+      <a-form-item label="背景基础色">
+        亮色
+        <input type="color" :value="systemForm.form.bgBaseColor" @change="changeBgBaseColor" />
+        暗色
+        <input
+          type="color"
+          :value="systemForm.form.darkBgBaseColor"
+          @change="changeDarkBgBaseColor"
+        />
+      </a-form-item>
       <a-form-item label="主题色">
+        <div
+          class="bg-[#1677ff] inline-block w-[50px] h-[19px]"
+          @click="systemForm.form.colorPrimary = '#1677ff'"
+        ></div>
+        <div
+          class="bg-[#392f5a] inline-block w-[50px] h-[19px]"
+          @click="systemForm.form.colorPrimary = '#392f5a'"
+        ></div>
+        <div
+          class="bg-[#a8e6cf] inline-block w-[50px] h-[19px]"
+          @click="systemForm.form.colorPrimary = '#a8e6cf'"
+        ></div>
+        <div class="ml-6 inline-block">自定义</div>
         <input type="color" :value="systemForm.form.colorPrimary" @change="changePrimaryColor" />
       </a-form-item>
       <a-form-item label="模式">
-        <a-radio-group v-model:value="systemForm.form.them">
+        <a-radio-group v-model:value="systemForm.form.theme">
           <a-radio value="light">亮色</a-radio>
           <a-radio value="dark">暗色</a-radio>
         </a-radio-group>
@@ -137,7 +166,7 @@ const changeTheme = () => {
           <a-radio :value="false">顶部显示</a-radio>
         </a-radio-group>
       </a-form-item>
-      <a-form-item label="(位置)">
+      <a-form-item label="(位置)" v-if="systemForm.form.showSide">
         <a-radio-group v-model:value="systemForm.form.sidePosition">
           <a-radio value="left">左侧</a-radio>
           <a-radio value="right">右侧</a-radio>

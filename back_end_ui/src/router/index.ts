@@ -13,6 +13,13 @@ const router = createRouter({
       path: '/',
       name: 'DashBoard',
       component: () => import('../views/DashBoardView.vue'),
+      children: [
+        {
+          path: '/generate',
+          name: 'Generate',
+          component: () => import('../views/GenerateView.vue'),
+        },
+      ],
     },
   ],
 })
