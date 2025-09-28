@@ -20,10 +20,20 @@ type GenerateTable struct {
 type GenerateColumns struct {
 	ID              uint   `json:"id" gorm:"primaryKey;autoIncrement"`
 	GenerateTableID uint   `json:"generateTableId" gorm:"comment:关联的表id"`
-	ColumnName      string `json:"columnName" gorm:"comment:字段名"`
+	StructName      string `json:"structName" gorm:"comment:结构体字段名"`
+	JsonName        string `json:"jsonName" gorm:"comment:json字段名"`
+	SqlName         string `json:"sqlName" gorm:"comment:sql字段名"`
 	ColumnLabel     string `json:"columnLabel" gorm:"comment:字段标签"`
 	ColumnType      string `json:"columnType" gorm:"comment:字段类型"`
+	InputType       string `json:"inputType" gorm:"comment:输入类型"`
+	SqlType         string `json:"sqlType" gorm:"comment:sql类型"`
+	DictId          uint   `json:"dictId" gorm:"comment:字典id"`
+	IsEdit          bool   `json:"isEdit" gorm:"comment:是否可编辑"`
+	IsExport        bool   `json:"isExport" gorm:"comment:是否导出"`
 	IsShow          bool   `json:"isShow" gorm:"comment:前端是否显示字段"`
-	IsFilter        bool   `json:"isFilter" gorm:"comment:是否参与过滤"`
+	IsQuery         bool   `json:"isQuery" gorm:"comment:是否参与过滤"`
+	QueryType       string `json:"queryType" gorm:"comment:过滤条件"`
+	IsSort          bool   `json:"isSort" gorm:"comment:是否可排序"`
+	SortType        string `json:"sortType" gorm:"comment:排序条件类型"`
 	IsRequired      bool   `json:"isRequired" gorm:"comment:是否必填"`
 }
