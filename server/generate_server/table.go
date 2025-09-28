@@ -93,7 +93,7 @@ func (s *GeneratorTableServer) List(queryData *generate_model.GenerateTableQuery
 func (s *GeneratorTableServer) GetById(id string) (*generate_model.GenerateTable, error) {
 	var err error
 	var data generate_model.GenerateTable
-	err = global.Db.First(&data, id).Error
+	err = global.Db.Preload("GenerateColumns").First(&data, id).Error
 	if err != nil {
 		return nil, err
 	}

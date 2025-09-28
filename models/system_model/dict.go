@@ -5,6 +5,8 @@ import "dream-vue-admin/models/core"
 // Dict 字典管理
 type Dict struct {
 	core.DreamModel
+	DictName string `json:"dictName" gorm:"comment:字典名称"`
+	DictCode string `json:"dictCode" gorm:"comment:字典编码"`
 }
 
 // DictValue 字典值

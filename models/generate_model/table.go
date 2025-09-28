@@ -10,9 +10,10 @@ type GenerateTable struct {
 	StructName       string            `json:"structName" gorm:"comment:结构体名称"`
 	TableComment     string            `json:"tableComment" gorm:"comment:表描述"`
 	SoftDelete       bool              `json:"softDelete" gorm:"comment:软删除"`
+	PrivateData      bool              `json:"privateData" gorm:"comment:私有数据"`
 	GenerateColumns  []GenerateColumns `json:"generateColumns" gorm:"comment:关联字段"`
 	Relation         uint              `json:"relation" gorm:"comment:表关系"`
-	GenerateTableID  uint              `json:"generateTableId" gorm:"comment:关联表"`
+	GenerateTableID  *uint             `json:"generateTableId" gorm:"comment:关联表"`
 	GenerateTable    *GenerateTable    `json:"generateTable"`
 }
 

@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { SystemInfo } from '@/interface/store/system.d'
+import { SystemInfo } from '@/interface/store/system.ts'
 
 export const useSystemStore = defineStore(
   'system',

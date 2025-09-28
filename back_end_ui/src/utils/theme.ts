@@ -1,6 +1,6 @@
 import { useSystemStore } from '@/stores/system.ts'
 import { computed } from 'vue'
-import { SystemInfo } from '@/interface/store/system.d'
+import { SystemInfo } from '@/interface/store/system.ts'
 
 const systemStore = useSystemStore()
 

@@ -8,8 +8,12 @@ defineProps({
   },
   title: {
     type: String,
-    default: '标题'
-  }
+    default: '标题',
+  },
+  hideDivider: {
+    type: Boolean,
+    default: true,
+  },
 })
 </script>
 
@@ -32,7 +36,7 @@ defineProps({
           <slot name="right" />
         </div>
       </div>
-      <div class="border-b border-b-gray-300 mb-5" v-if="showTitle"></div>
+      <div class="border-b border-b-gray-300 mb-5" v-if="!hideDivider"></div>
       <slot />
     </a-layout>
   </div>

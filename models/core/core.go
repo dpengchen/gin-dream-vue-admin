@@ -3,12 +3,15 @@ package core
 import "time"
 
 type DreamModel struct {
-	ID         uint       `json:"id" gorm:"column:id;primaryKey;autoIncrement"`
-	CreateTime *time.Time `json:"createTime"`
-	UpdateTime *time.Time `json:"updateTime"`
-	CreateBy   int        `json:"createBy"`           //创建人
-	UpdateBy   int        `json:"updateBy"`           //创建人
-	IsDel      int        `json:"isDel" gorm:"index"` //软删除
-	DeleteBy   int        `json:"deleteBy"`           //删除人
-	DeleteTime *time.Time `json:"deleteTime"`
+	ID               uint       `json:"id" gorm:"column:id;primaryKey;autoIncrement"`
+	CreateTime       *time.Time `json:"createTime" gorm:"column:create_time"`
+	UpdateTime       *time.Time `json:"updateTime" gorm:"column:update_time"`
+	CreateBy         int        `json:"createBy" gorm:"column:create_by"` //创建人
+	UpdateBy         int        `json:"updateBy" gorm:"column:update_by"` //创建人
+	DeleteBy         int        `json:"deleteBy" gorm:"column:delete_by"` //删除人
+	IsDel            int        `json:"isDel" gorm:"index;column:is_del"` //软删除
+	DeleteTime       *time.Time `json:"deleteTime" gorm:"column:delete_time"`
+	CreateByNickname string     `json:"createByNickname" gorm:"-"` //创建人
+	UpdateByNickname string     `json:"updateByNickname" gorm:"-"` //创建人
+	DeleteByNickname string     `json:"deleteByNickname" gorm:"-"` //删除人
 }

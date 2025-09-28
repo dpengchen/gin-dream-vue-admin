@@ -2,6 +2,7 @@ package gorm
 
 import (
 	"dream-vue-admin/global"
+	"dream-vue-admin/models/generate_model"
 	"dream-vue-admin/models/system_model"
 	"fmt"
 	"log"
@@ -34,7 +35,7 @@ func InitGorm() *gorm.DB {
 		Logger: gormLogger,
 		NamingStrategy: schema.NamingStrategy{
 			SingularTable: true,
-			NoLowerCase:   true,
+			NoLowerCase:   false,
 		},
 	})
 	if err != nil {
@@ -52,10 +53,12 @@ func initModel(db *gorm.DB) {
 	err := db.AutoMigrate(
 		// casbin记录权限
 		&gormadapter.CasbinRule{},
-
 		//字典
 		&system_model.Dict{},
 		&system_model.DictValue{},
+		//生成
+		&generate_model.GenerateTable{},
+		&generate_model.GenerateColumns{},
 	)
 	if err != nil {
 		log.Panicf("初始化Gorm模型失败：%s", err.Error())

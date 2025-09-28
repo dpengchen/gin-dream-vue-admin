@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { DesktopOutlined, SettingOutlined } from '@ant-design/icons-vue'
-import { Share as IconShare, Cpu as IconCPU } from '@icon-park/vue-next'
+import { Share as IconShare, Cpu as IconCPU, Notebook as IconNotebook } from '@icon-park/vue-next'
 import IconPackAdapter from '@/components/IconPackAdapter.vue'
 import router from '@/router'
 import { currentBgColor, systemInfo } from '@/utils/theme.ts'
@@ -40,6 +40,12 @@ const selectMenu = ({ key, selectedKeys }: any) => {
             <span>系统工具</span>
           </span>
         </template>
+        <a-menu-item key="/dict">
+          <IconPackAdapter>
+            <IconNotebook />
+          </IconPackAdapter>
+          <span>字典管理</span>
+        </a-menu-item>
         <a-menu-item key="/generate">
           <IconPackAdapter>
             <IconCPU />

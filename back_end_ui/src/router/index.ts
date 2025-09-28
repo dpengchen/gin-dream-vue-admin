@@ -15,9 +15,14 @@ const router = createRouter({
       component: () => import('../views/DashBoardView.vue'),
       children: [
         {
+          path: '/dict',
+          name: 'Dict',
+          component: () => import('../views/system/DictView.vue'),
+        },
+        {
           path: '/generate',
           name: 'Generate',
-          component: () => import('../views/GenerateView.vue'),
+          component: () => import('../views/system/GenerateView.vue'),
         },
       ],
     },

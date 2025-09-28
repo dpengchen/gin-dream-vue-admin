@@ -1,12 +1,16 @@
 <script setup lang="ts">
 import LayoutContainer from '@/components/layout/LayoutContainer.vue'
-import { reactive, ref } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 import { Code as IconCode } from '@icon-park/vue-next'
 import { PlusOutlined, SaveOutlined, EyeOutlined } from '@ant-design/icons-vue'
 import IconPackAdapter from '@/components/IconPackAdapter.vue'
+import type { GenerateColumns, GenerateTable } from '@/interface/system/generate'
+import { message } from 'ant-design-vue'
+import { addGenerateTable, getGenerateTableById } from '@/api/generate/table'
+import { useRoute } from 'vue-router'
 
 const table = reactive({
-  list: [],
+  list: [] as any[],
   remove: (index: number) => {
     table.list.splice(index, 1)
   },
@@ -31,9 +35,9 @@ const table = reactive({
       align: 'center',
     },
     {
-      title: '字段长度',
-      dataIndex: 'columnLen',
-      key: 'columnLen',
+      title: 'SQL类型',
+      dataIndex: 'sqlType',
+      key: 'sqlType',
       align: 'center',
     },
     {
@@ -99,6 +103,8 @@ const table = reactive({
   ],
 })
 
+//生成表
+const tableFormRef = ref()
 const tableForm = reactive({
   form: {
     id: null,
@@ -107,10 +113,11 @@ const tableForm = reactive({
     structName: '',
     tableComment: '',
     softDelete: false,
-    generateColumns: [],
+    privateData: false,
+    generateColumns: [] as GenerateColumns[],
     relation: '',
     generateTableId: null,
-  },
+  } as GenerateTable,
   rules: {
     generateVersion: [{ required: true, message: '请输入版本号', trigger: 'blur' }],
     generateBasePath: [{ required: true, message: '请输入生成路径', trigger: 'blur' }],
@@ -118,11 +125,39 @@ const tableForm = reactive({
     tableComment: [{ required: true, message: '请输入表注释', trigger: 'blur' }],
     softDelete: [{ required: true, message: '请选择是否软删除', trigger: 'blur' }],
     generateColumns: [{ required: true, message: '请选择字段', trigger: 'blur' }],
-    relation: [{ required: true, message: '请选择关联关系', trigger: 'blur' }],
-
   },
+  reset: () => {
+    tableForm.form = {
+      id: null,
+      generateVersion: '',
+      generateBasePath: '',
+      structName: '',
+      tableComment: '',
+      softDelete: false,
+      privateData: false,
+      generateColumns: [],
+      relation: '',
+      generateTableId: null,
+    }
+  },
+  save: () => {
+    //验证表单
+    tableFormRef.value.validate().then(() => {
+      if (!table.list.length) {
+        message.error('请先添加表字段，表字段不能为空！')
+        return
+      }
+      tableForm.form.generateColumns = table.list
+      addGenerateTable(tableForm.form).then((resp) => {
+        console.log(resp)
+      })
+    })
+  },
+  generate: () => {},
+  preview: () => {},
 })
 
+//生成字段
 const fieldFormRef = ref()
 const fieldForm = reactive({
   index: null,
@@ -159,10 +194,10 @@ const fieldForm = reactive({
     isShow: true,
     isQuery: false,
     queryType: '=',
-    isSort: null,
+    isSort: false,
     sortType: 'DESC',
     isRequired: false,
-  },
+  } as GenerateColumns,
   rules: {
     structName: [{ required: true, message: '请输入结构体名', trigger: 'blur' }],
     jsonName: [{ required: true, message: '请输入json名', trigger: 'blur' }],
@@ -187,17 +222,21 @@ const fieldForm = reactive({
       isShow: true,
       isQuery: false,
       queryType: '=',
+
       isSort: false,
       sortType: 'DESC',
       isRequired: false,
-    }
+    } as GenerateColumns
   },
   edit: (record: any, index: number) => {
     if (index != undefined) {
       //存在id
       fieldForm.form = record
+      //@ts-expect-error @ts-ignore
       fieldForm.index = index
       fieldForm.title = '编辑字段'
+      //@ts-expect-error @ts-ignore
+      fieldForm.form.columnLen = record.sqlType.split('(')[1]?.split(')')[0]
     } else {
       //不存在
       fieldForm.index = null
@@ -209,15 +248,23 @@ const fieldForm = reactive({
   confirm: () => {
     fieldFormRef.value.validate().then(() => {
       fieldForm.visible = false
+      //@ts-expect-error @ts-ignore
       fieldForm.form.sqlType = fieldForm.map[fieldForm.form.inputType][1]
+      //@ts-expect-error @ts-ignore
       fieldForm.form.columnType = fieldForm.map[fieldForm.form.inputType][0]
 
       //判断是否要加上长度
+      //@ts-expect-error @ts-ignore
       if (fieldForm.map[fieldForm.form.inputType].length > 2) {
+        //@ts-expect-error @ts-ignore
         if (fieldForm.form.columnLen) {
+          //@ts-expect-error @ts-ignore
           fieldForm.form.sqlType += '(' + fieldForm.form.columnLen + ')'
         }
       }
+      //删除多余字段columnLen
+      //@ts-expect-error @ts-ignore
+      delete fieldForm.form.columnLen
       console.log(fieldForm.form)
       if (fieldForm.index != undefined) {
         table.list[fieldForm.index] = fieldForm.form
@@ -227,7 +274,7 @@ const fieldForm = reactive({
     })
   },
   convertName: () => {
-    const name = fieldForm.form.structName
+    const name = fieldForm.form.structName!
     //转换为小写
     const allLowerName = name
       .replace(/([A-Z])/g, '_$1')
@@ -238,31 +285,47 @@ const fieldForm = reactive({
     fieldForm.form.jsonName = name[0].toLowerCase() + name.substring(1)
   },
 })
+
+onMounted(() => {
+  const route = useRoute()
+  const id = route.query.id
+  if (!id) {
+    return
+  }
+  getGenerateTableById(Number(id)).then((resp: any) => {
+    console.log(resp)
+    tableForm.form = resp.data
+    table.list = resp.data.generateColumns
+  })
+})
 </script>
 
 <template>
   <div>
-    <LayoutContainer show-title>
+    <LayoutContainer show-title :hide-divider="false">
       <template #left>生成表配置</template>
       <template #right>
         <a-space>
-          <a-button type="primary">
+          <a-button type="primary" @click="tableForm.save">
             <template #icon>
               <SaveOutlined />
             </template>
-            保存</a-button
-          >
-          <a-button type="primary" class="!bg-orange-400">
+            保存
+          </a-button>
+          <a-button type="primary" class="!bg-orange-400" @click="tableForm.generate">
             <template #icon>
               <IconPackAdapter>
                 <IconCode />
               </IconPackAdapter>
             </template>
-            生成</a-button
-          >
-          <a-button type="primary" class="!bg-green-500">
-            <template #icon><EyeOutlined /></template>预览</a-button
-          >
+            生成
+          </a-button>
+          <a-button type="primary" class="!bg-green-500" @click="tableForm.preview">
+            <template #icon>
+              <EyeOutlined />
+            </template>
+            预览
+          </a-button>
         </a-space>
       </template>
       <a-form
@@ -303,7 +366,13 @@ const fieldForm = reactive({
             </a-form-item>
           </a-col>
           <a-col :span="6" v-if="tableForm.form.relation">
-            <a-form-item label="关联表" name="generateTableId" :rules="[{ required: tableForm.form.relation, message: '请选择关联关系', trigger: 'blur' }]">
+            <a-form-item
+              label="关联表"
+              name="generateTableId"
+              :rules="[
+                { required: tableForm.form.relation, message: '请选择关联关系', trigger: 'blur' },
+              ]"
+            >
               <a-select v-model:value="tableForm.form.generateTableId"></a-select>
             </a-form-item>
           </a-col>
@@ -312,10 +381,15 @@ const fieldForm = reactive({
               <a-switch v-model:checked="tableForm.form.softDelete"></a-switch>
             </a-form-item>
           </a-col>
+          <a-col :span="6">
+            <a-form-item label="私有数据" name="privateData">
+              <a-switch v-model:checked="tableForm.form.privateData"></a-switch>
+            </a-form-item>
+          </a-col>
         </a-row>
       </a-form>
     </LayoutContainer>
-    <LayoutContainer show-title>
+    <LayoutContainer show-title :hide-divider="false">
       <template #left>生成表--字段</template>
       <template #right>
         <a-button @click="fieldForm.edit">
@@ -328,15 +402,15 @@ const fieldForm = reactive({
       <a-table :columns="table.columns" :data-source="table.list" :scroll="{ x: 2000 }">
         <template #bodyCell="{ column, record, index }">
           <template v-if="column.key.indexOf('is') != -1">
-            <a-tag :color="record[column.key] ? '#108ee9' : '#cd201f'">{{
-              record[column.key] ? 'yes' : 'no'
-            }}</a-tag>
+            <a-tag :color="record[column.key] ? '#108ee9' : '#cd201f'"
+              >{{ record[column.key] ? 'yes' : 'no' }}
+            </a-tag>
           </template>
           <template v-else-if="column.key == 'operation'">
             <a-space>
               <a-button type="link" class="!text-orange-400" @click="fieldForm.edit(record, index)"
-                >修改</a-button
-              >
+                >修改
+              </a-button>
               <a-button type="link" danger @click="table.remove(index)">删除</a-button>
             </a-space>
           </template>
@@ -368,7 +442,7 @@ const fieldForm = reactive({
             <a-form-item label="结构体名：" name="structName">
               <a-row>
                 <a-col :span="19">
-                  <a-input v-model:value="fieldForm.form.structName"> </a-input>
+                  <a-input v-model:value="fieldForm.form.structName"></a-input>
                 </a-col>
                 <a-col :span="4" :offset="1">
                   <a-button @click="fieldForm.convertName">同步</a-button>
