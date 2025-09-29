@@ -15,5 +15,6 @@ func InitGenerateRouter(v1group *gin.RouterGroup) {
 		group.PUT("/:id", api.Modify)
 		group.GET("/list", api.List)
 		group.GET("/:id", api.GetById)
+		group.GET("/generate/:id", api.Generator)
 	}
 }

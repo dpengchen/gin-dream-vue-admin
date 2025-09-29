@@ -6,7 +6,7 @@ import { PlusOutlined, SaveOutlined, EyeOutlined } from '@ant-design/icons-vue'
 import IconPackAdapter from '@/components/IconPackAdapter.vue'
 import type { GenerateColumns, GenerateTable } from '@/interface/generate'
 import { message } from 'ant-design-vue'
-import { addGenerateTable, getGenerateTableById } from '@/api/generate/table'
+import { addGenerateTable, generateTable, getGenerateTableById } from '@/api/generate/table'
 import { useRoute } from 'vue-router'
 
 const table = reactive({
@@ -169,7 +169,16 @@ const tableForm = reactive({
       })
     })
   },
-  generate: () => {},
+  generate: () => {
+    if (!tableForm.form.id) {
+      message.error('请先保存表！')
+      return
+    }
+    //@ts-expect-error @ts-ignore
+    generateTable(tableForm.form.id).then((resp) => {
+      message.success(resp.msg)
+    })
+  },
   preview: () => {},
 })
 

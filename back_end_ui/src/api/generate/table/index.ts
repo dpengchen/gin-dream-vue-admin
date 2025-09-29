@@ -29,7 +29,7 @@ export const modifyGenerateTable = (data: GenerateTable, id: number) => {
   })
 }
 
-//获取生成表通过ID
+//获取生成表列表
 export const getGenerateTableList = (params: PageParams) => {
   return request({
     url: `${baseURL}/list`,
@@ -42,6 +42,14 @@ export const getGenerateTableList = (params: PageParams) => {
 export const getGenerateTableById = (id: number) => {
   return request({
     url: `${baseURL}/${id}`,
+    method: 'GET',
+  })
+}
+
+//生成代码
+export const generateTable=(id:number)=>{
+  return request({
+    url: `${baseURL}/generate/${id}`,
     method: 'GET',
   })
 }

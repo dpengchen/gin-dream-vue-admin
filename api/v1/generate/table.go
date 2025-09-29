@@ -5,6 +5,7 @@ import (
 	"dream-vue-admin/models/generate_model"
 	"dream-vue-admin/server/v1/generate_server"
 	"dream-vue-admin/util/constants"
+	"dream-vue-admin/util/generate"
 	"dream-vue-admin/util/http/response"
 	"fmt"
 	"net/http"
@@ -124,4 +125,22 @@ func (api *GeneratorTableApi) GetById(c *gin.Context) {
 	}
 
 	response.Success(c, data)
+}
+
+func (api *GeneratorTableApi) Generator(c *gin.Context) {
+	id := c.Param("id")
+	table, err := api.server.GetById(id)
+	if err != nil {
+		global.Log.Warnln("【生成表-生成】数据库调用失败：", err.Error())
+		response.FailWithInternalError(c, fmt.Sprint("获取生成表详情失败：", err.Error()))
+		return
+	}
+	err = generate.GeneratorTemplate(table)
+	if err != nil {
+		global.Log.Error("【生成表-生成】生成模板失败：", err.Error())
+		response.FailWithInternalError(c, fmt.Sprint("生成模板失败：", err.Error()))
+		return
+	}
+
+	response.Success(c, "生成成功")
 }
