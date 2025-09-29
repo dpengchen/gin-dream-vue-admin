@@ -2,8 +2,8 @@ package system
 
 import (
 	"dream-vue-admin/global"
-	"dream-vue-admin/models/{{ .GenerateBasePath }}_model"
-	"dream-vue-admin/server/{{ .GenerateBasePath }}_server"
+	"dream-vue-admin/models/v1/{{ .GenerateBasePath }}_model"
+	"dream-vue-admin/server/v1/{{ .GenerateBasePath }}_server"
 	"dream-vue-admin/util/constants"
 	"dream-vue-admin/util/http/response"
 	"fmt"

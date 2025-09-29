@@ -2,7 +2,7 @@ package {{ .GenerateBasePath }}_server
 
 import (
 	"dream-vue-admin/global"
-	"dream-vue-admin/models/{{ .GenerateBasePath }}_model"
+	"dream-vue-admin/models/v1/{{ .GenerateBasePath }}_model"
 	"dream-vue-admin/util/constants"
 	"errors"
 	"fmt"

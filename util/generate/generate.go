@@ -33,11 +33,11 @@ func GeneratorTemplate(table *generate_model.GenerateTable) error {
 	if err != nil {
 		return err
 	}
-	err = saveFile(table, serverPath, "back_router.template")
+	err = saveFile(table, routerPath, "back_router.template")
 	if err != nil {
 		return err
 	}
-	err = saveFile(table, routerPath, "back_server.template")
+	err = saveFile(table, serverPath, "back_server.template")
 	if err != nil {
 		return err
 	}
