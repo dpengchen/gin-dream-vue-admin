@@ -3,7 +3,7 @@ package generate
 import (
 	"dream-vue-admin/global"
 	"dream-vue-admin/models/generate_model"
-	"dream-vue-admin/server/generate_server"
+	"dream-vue-admin/server/v1/generate_server"
 	"dream-vue-admin/util/constants"
 	"dream-vue-admin/util/http/response"
 	"fmt"

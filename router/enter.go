@@ -6,6 +6,9 @@ import (
 	"fmt"
 	"log"
 
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -20,6 +23,9 @@ func InitRouterAndRun() {
 		//注册路由
 		//v1版本
 		initalize.InitV1Router(group)
+
+		// 注册swagger路由
+		engine.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	}
 
 	//启动服务

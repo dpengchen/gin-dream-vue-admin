@@ -3,7 +3,7 @@ package system
 import (
 	"dream-vue-admin/global"
 	"dream-vue-admin/models/system_model"
-	"dream-vue-admin/server/system_server"
+	"dream-vue-admin/server/v1/system_server"
 	"dream-vue-admin/util/constants"
 	"dream-vue-admin/util/http/response"
 	"fmt"
@@ -25,6 +25,14 @@ func NewDictApi() *DictApi {
 }
 
 // Create 创建字典
+// @Summary 创建字典
+// @Description 创建一个新的字典项
+// @Tags 字典管理
+// @Accept json
+// @Produce json
+// @Param dict body system_model.Dict true "字典信息"
+// @Success 200 {object} response.Response{data=system_model.Dict}
+// @Router /system/dict [post]
 func (api *DictApi) Create(c *gin.Context) {
 	var reqData system_model.Dict
 	var err error
@@ -42,6 +50,14 @@ func (api *DictApi) Create(c *gin.Context) {
 }
 
 // Remove 删除字典
+// @Summary 删除字典
+// @Description 根据ID列表删除字典项
+// @Tags 字典管理
+// @Accept json
+// @Produce json
+// @Param ids body []uint true "字典ID列表"
+// @Success 200 {object} response.Response
+// @Router /system/dict [delete]
 func (api *DictApi) Remove(c *gin.Context) {
 	var err error
 	var ids []any
@@ -68,6 +84,15 @@ func (api *DictApi) Remove(c *gin.Context) {
 }
 
 // Modify 修改字典
+// @Summary 修改字典
+// @Description 根据ID修改字典信息
+// @Tags 字典管理
+// @Accept json
+// @Produce json
+// @Param id path string true "字典ID"
+// @Param dict body system_model.Dict true "字典信息"
+// @Success 200 {object} response.Response
+// @Router /system/dict/{id} [put]
 func (api *DictApi) Modify(c *gin.Context) {
 	var err error
 	var data system_model.Dict
@@ -96,6 +121,16 @@ func (api *DictApi) Modify(c *gin.Context) {
 }
 
 // List 查询字典列表
+// @Summary 查询字典列表
+// @Description 根据条件查询字典列表
+// @Tags 字典管理
+// @Accept json
+// @Produce json
+// @Param dictName query string false "字典名称"
+// @Param page query int false "页码" default(1)
+// @Param size query int false "每页数量" default(10)
+// @Success 200 {object} response.Response{data=response.PageResult{list=[]system_model.Dict}}
+// @Router /system/dict/list [get]
 func (api *DictApi) List(c *gin.Context) {
 	var err error
 	var queryData system_model.DictQuery
@@ -113,6 +148,15 @@ func (api *DictApi) List(c *gin.Context) {
 	response.SuccessWithList(c, list, total, &queryData.BaseQuery)
 }
 
+// GetById 获取字典详情
+// @Summary 获取字典详情
+// @Description 根据ID获取字典详情
+// @Tags 字典管理
+// @Accept json
+// @Produce json
+// @Param id path string true "字典ID"
+// @Success 200 {object} response.Response{data=system_model.Dict}
+// @Router /system/dict/{id} [get]
 func (api *DictApi) GetById(c *gin.Context) {
 	var err error
 	var data *system_model.Dict

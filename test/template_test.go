@@ -1,26 +1,13 @@
 package test
 
 import (
-	"bytes"
 	"dream-vue-admin/models/generate_model"
+	"dream-vue-admin/util/generate"
 	"log"
-	"os"
-	"strings"
 	"testing"
-	"text/template"
 )
 
 func TestTemplate(t *testing.T) {
-	files, err := template.ParseFiles("./templ/back_server.template")
-
-	if err != nil {
-		log.Println(err.Error())
-	}
-	file, err := os.Create("web_api.txt")
-	buffer := bytes.NewBuffer(make([]byte, 0))
-	if err != nil {
-		log.Println(err.Error())
-	}
 	table := generate_model.GenerateTable{
 		GenerateVersion:  "v1",
 		GenerateBasePath: "system",
@@ -93,12 +80,8 @@ func TestTemplate(t *testing.T) {
 			},
 		},
 	}
-	err = files.Execute(buffer, table)
+	err := generate.GeneratorTemplate(&table)
 	if err != nil {
 		log.Println(err.Error())
 	}
-	content := buffer.String()
-	content = strings.ReplaceAll(content, "webTemplate-start", "{{")
-	content = strings.ReplaceAll(content, "webTemplate-end", "}}")
-	_, _ = file.Write([]byte(content))
 }

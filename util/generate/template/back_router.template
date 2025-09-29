@@ -1,0 +1,19 @@
+package {{ .GenerateBasePath }}_router
+
+import (
+	"dream-vue-admin/api/{{ .GenerateVersion }}/{{ .GenerateBasePath }}"
+
+	"github.com/gin-gonic/gin"
+)
+
+func Init{{ .StructName }}Router({{ .GenerateVersion }}group *gin.RouterGroup) {
+	group := {{ .GenerateVersion }}group.Group("/{{ .GenerateBasePath }}/{{ .FileName }}")
+	api := {{ .GenerateBasePath }}.New{{ .StructName }}Api()
+	{
+		group.POST("", api.Create)
+		group.DELETE("", api.Remove)
+		group.PUT("/:id", api.Modify)
+		group.GET("/list", api.List)
+		group.GET("/:id", api.GetById)
+	}
+}
