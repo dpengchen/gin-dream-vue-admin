@@ -6,7 +6,6 @@ import (
 	"embed"
 	"errors"
 	"fmt"
-	"io"
 	"log"
 	"os"
 	"strings"
@@ -119,7 +118,7 @@ func registerRouterAndGorm(table *generate_model.GenerateTable, dir string) erro
 	//注册到路由文件中
 	err = writerFile(
 		fmt.Sprintf("%s/%s", dir, "router/initalize/v1.go"),
-		fmt.Sprintf("%s_router.Init%sRouter(group)", table.GenerateBasePath, table.StructName),
+		fmt.Sprintf("\t//初始化%s路由\n\t%s_router.Init%sRouter(group)", table.TableComment, table.GenerateBasePath, table.StructName),
 		11,
 	)
 	if err != nil {
@@ -129,27 +128,41 @@ func registerRouterAndGorm(table *generate_model.GenerateTable, dir string) erro
 	//注册到gorm数据库中
 	return writerFile(
 		fmt.Sprintf("%s/%s", dir, "pkg/gorm/gorm.go"),
-		fmt.Sprintf("&%s_model.%s{},", table.GenerateBasePath, table.StructName),
+		fmt.Sprintf("\t\t//注册%s模型\n\t\t&%s_model.%s{},", table.TableComment, table.GenerateBasePath, table.StructName),
 		54,
 	)
 }
 
 func writerFile(filePath string, writerContent string, line int) error {
 
-	routerFile, err := os.OpenFile(filePath, os.O_RDWR|os.O_APPEND|os.O_TRUNC, 0666)
+	content, err := os.ReadFile(filePath)
 	if err != nil {
 		return errors.New("打开路由文件错误" + filePath + err.Error())
 	}
+	routerFile, _ := os.OpenFile(filePath, os.O_RDWR|os.O_TRUNC, 0666)
 	defer routerFile.Close()
 
 	//替换文件
-	content, _ := io.ReadAll(routerFile)
 	lines := strings.Split(string(content), "\n")
-	contentLines := append(lines[:line], writerContent)
-	contentLines = append(contentLines, lines[line:]...)
+	contentLines := make([]string, len(lines)+1)
+	line--
+	for i := range lines {
+		if i == line {
+			contentLines[i] = writerContent
+			contentLines[i+1] = lines[i]
+			continue
+		}
+		if i > line {
+			contentLines[i+1] = lines[i]
+			continue
+		}
+
+		contentLines[i] = lines[i]
+	}
 
 	//清空routerFile，写入contentStr
 	_ = routerFile.Truncate(0)
-	_, err = routerFile.Write([]byte(strings.Join(contentLines, "\n")))
+	writerContent = strings.Trim(strings.Join(contentLines, "\n"), "\x00")
+	_, err = routerFile.WriteString(writerContent)
 	return err
 }
