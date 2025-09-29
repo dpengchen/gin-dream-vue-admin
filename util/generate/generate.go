@@ -42,8 +42,8 @@ func GeneratorTemplate(table *generate_model.GenerateTable) error {
 		return err
 	}
 
-	apiWebPath := fmt.Sprintf("%s/back_end_ui/src/api/%s/%s.ts", dir, table.GenerateBasePath, table.FileName)
-	interfaceWebPath := fmt.Sprintf("%s/back_end_ui/src/interface/%s/%s.ts", dir, table.GenerateBasePath, table.FileName)
+	apiWebPath := fmt.Sprintf("%s/back_end_ui/src/api/%s/%s.ts", dir, table.GenerateBasePath, table.FolderName)
+	interfaceWebPath := fmt.Sprintf("%s/back_end_ui/src/interface/%s/%s.ts", dir, table.GenerateBasePath, table.FolderName)
 	viewWebPath := fmt.Sprintf("%s/back_end_ui/src/views/%s/%sView.vue", dir, table.GenerateBasePath, table.StructName)
 	err = saveFile(table, apiWebPath, "web_api.template")
 	if err != nil {

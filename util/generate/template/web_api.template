@@ -1,7 +1,7 @@
 import request from '@/api/request.ts'
-import type { {{ .StructName }}, {{ .StructName }}Query } from '@/interface/{{ .GenerateBasePath }}/{{ .StructName }}'
+import type { {{ .StructName }}, {{ .StructName }}Query } from '@/interface/{{ .GenerateBasePath }}/{{ .FolderName }}'
 
-const baseURL = '/v1/{{ .GenerateBasePath }}/{{ .FileName }}'
+const baseURL = '/v1/{{ .GenerateBasePath }}/{{ .FolderName }}'
 //添加{{ .TableComment }}
 export const add{{ .StructName }} = (data: {{ .StructName }}) => {
   return request({
