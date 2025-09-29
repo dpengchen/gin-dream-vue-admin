@@ -4,7 +4,7 @@ import { onMounted, reactive, ref } from 'vue'
 import { Code as IconCode } from '@icon-park/vue-next'
 import { PlusOutlined, SaveOutlined, EyeOutlined } from '@ant-design/icons-vue'
 import IconPackAdapter from '@/components/IconPackAdapter.vue'
-import type { GenerateColumns, GenerateTable } from '@/interface/system/generate'
+import type { GenerateColumns, GenerateTable } from '@/interface/generate'
 import { message } from 'ant-design-vue'
 import { addGenerateTable, getGenerateTableById } from '@/api/generate/table'
 import { useRoute } from 'vue-router'
@@ -111,6 +111,8 @@ const tableForm = reactive({
     generateVersion: '',
     generateBasePath: '',
     structName: '',
+    fileName: '',
+    folderName: '',
     tableComment: '',
     softDelete: false,
     privateData: false,
@@ -132,13 +134,15 @@ const tableForm = reactive({
       generateVersion: '',
       generateBasePath: '',
       structName: '',
+      fileName: '',
+      folderName: '',
       tableComment: '',
       softDelete: false,
       privateData: false,
       generateColumns: [],
       relation: '',
       generateTableId: null,
-    }
+    } as GenerateTable
   },
   save: () => {
     //验证表单
@@ -147,6 +151,18 @@ const tableForm = reactive({
         message.error('请先添加表字段，表字段不能为空！')
         return
       }
+
+      const allLowerName = tableForm.form.structName
+        .replace(/([A-Z])/g, '_$1')
+        .toLowerCase()
+        .substring(1)
+      tableForm.form.fileName = allLowerName
+      tableForm.form.folderName = allLowerName[0] + tableForm.form.structName.substring(1)
+
+      console.log('fileName 和 folderName：')
+      console.log(tableForm.form.fileName)
+      console.log(tableForm.form.folderName)
+
       tableForm.form.generateColumns = table.list
       addGenerateTable(tableForm.form).then((resp) => {
         console.log(resp)
@@ -164,19 +180,19 @@ const fieldForm = reactive({
   visible: false,
   title: '添加字段',
   map: {
-    text: ['string', 'varchar', true],
-    rich_text: ['longtext'],
-    md: ['string', 'longtext'],
-    int: ['int', 'int', true],
-    float: ['float', 'float', true],
-    date: ['time.Time', 'date'],
-    datetime: ['time.Time', 'datetime'],
-    switch: ['bool', 'TINYINT(1)'],
-    color: ['string', 'varchar(10)'],
-    img: ['string', 'varchar(255)'],
-    file: ['string', 'varchar(512)'],
-    many_img: ['string', 'text'],
-    many_file: ['string', 'text'],
+    text: ['string', 'varchar', 'string', true],
+    rich_text: ['string', 'longtext', 'string'],
+    md: ['string', 'longtext', 'string'],
+    int: ['int', 'int', 'number', true],
+    float: ['float', 'float', 'number', true],
+    date: ['time.Time', 'date', 'string'],
+    datetime: ['time.Time', 'datetime', 'string'],
+    switch: ['bool', 'TINYINT(1)', 'boolean'],
+    color: ['string', 'varchar(10)', 'string'],
+    img: ['string', 'varchar(255)', 'string'],
+    file: ['string', 'varchar(512)', 'string'],
+    many_img: ['string', 'text', 'string'],
+    many_file: ['string', 'text', 'string'],
   },
   form: {
     id: null,
@@ -187,6 +203,7 @@ const fieldForm = reactive({
     columnType: '',
     inputType: '',
     columnLen: null,
+    tsType: '',
     sqlType: '',
     dictId: null,
     isEdit: true,
@@ -222,7 +239,7 @@ const fieldForm = reactive({
       isShow: true,
       isQuery: false,
       queryType: '=',
-
+      tsType: '',
       isSort: false,
       sortType: 'DESC',
       isRequired: false,
@@ -252,10 +269,12 @@ const fieldForm = reactive({
       fieldForm.form.sqlType = fieldForm.map[fieldForm.form.inputType][1]
       //@ts-expect-error @ts-ignore
       fieldForm.form.columnType = fieldForm.map[fieldForm.form.inputType][0]
+      //@ts-expect-error @ts-ignore
+      fieldForm.form.tsType = fieldForm.map[fieldForm.form.inputType][2]
 
       //判断是否要加上长度
       //@ts-expect-error @ts-ignore
-      if (fieldForm.map[fieldForm.form.inputType].length > 2) {
+      if (fieldForm.map[fieldForm.form.inputType].length > 3) {
         //@ts-expect-error @ts-ignore
         if (fieldForm.form.columnLen) {
           //@ts-expect-error @ts-ignore
@@ -359,7 +378,7 @@ onMounted(() => {
           <a-col :span="6">
             <a-form-item label="关联关系" name="relation">
               <a-select v-model:value="tableForm.form.relation">
-                <a-select-option :value="null">无</a-select-option>
+                <a-select-option value="">无</a-select-option>
                 <a-select-option value="many">一对多</a-select-option>
                 <a-select-option value="many2many">多对多</a-select-option>
               </a-select>

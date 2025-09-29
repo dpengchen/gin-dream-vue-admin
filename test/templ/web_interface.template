@@ -1,0 +1,18 @@
+import type { DreamModel, PageParams } from '@/interface/core'
+
+
+//{{ .StructName }} {{ .TableComment }}
+export interface {{ .StructName }} extends DreamModel {
+  {{ range $val := .GenerateColumns }}
+  //{{ $val.ColumnLabel }}
+  {{ $val.JsonName }}{{ if not $val.IsRequired }}?{{ end }}: {{ $val.TsType }}| null {{ end }}
+
+}
+
+//{{ .StructName }}Query {{ .TableComment }}查询对象
+export interface {{ .StructName }}Query extends PageParams {
+  {{ range $val := .GenerateColumns }}{{ if $val.IsQuery }}
+  //{{ $val.ColumnLabel }}
+  {{ $val.JsonName }}?: {{ $val.TsType }}{{ end }}{{end}}
+
+}

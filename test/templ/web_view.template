@@ -9,73 +9,77 @@ import {
   EditOutlined,
   SearchOutlined,
 } from '@ant-design/icons-vue'
-import type { Dict, DictQuery } from '@/interface/system/dict'
+import type { {{ .StructName }}, {{ .StructName }}Query } from '@/interface/{{ .GenerateBasePath }}/{{ .FolderName }}'
 import { message, Modal } from 'ant-design-vue'
 import {
-  addDict,
-  exportDict,
-  getDictById,
-  getDictList,
-  modifyDict,
-  removeDictById,
-} from '@/api/system/dict'
+  add{{ .StructName }},
+  export{{ .StructName }},
+  get{{ .StructName }}ById,
+  get{{ .StructName }}List,
+  modify{{ .StructName }},
+  remove{{ .StructName }}ById,
+} from '@/api/{{ .GenerateBasePath }}/{{ .FolderName }}'
 import type { PageResult } from '@/interface/core'
 import dayjs from 'dayjs'
 
-const dictFormRef = ref()
-const dictForm = reactive({
-  form: {} as Dict, //表单数据
+const {{ .FileName }}Ref = ref()
+const {{ .FileName }}Form = reactive({
+  form: {} as {{ .StructName }}, //表单数据
   rules: {
-    dictCode: [{ required: true, message: '字典编码不能为空', trigger: 'blur' }],
-    dictName: [{ required: true, message: '字典名称不能为空', trigger: 'blur' }],
+    {{ range $val := .GenerateColumns }}{{ if $val.IsRequired }}
+    //{{ $val.ColumnLabel }}
+    {{ $val.JsonName}}: [{ required: true, message: '{{ $val.ColumnLabel }}不能为空', trigger: 'blur' }],{{end}}{{end}}
+
   }, //校验规则
   visible: false, //drawer 抽屉显示
-  title: '新增字典', //标题
+  title: '新增{{ .TableComment }}', //标题
   reset: () => {
     //重置表单
-    dictForm.form = {
+    {{ .FileName }}Form.form = {
       id: null,
-      dictCode: '',
-      dictName: '',
-    } as Dict
+      {{ range $val := .GenerateColumns }}
+      //{{ $val.ColumnLabel }}
+      {{ $val.JsonName}}: null,{{end}}
+      
+    } as {{ .StructName }}
   },
   edit: (record: any) => {
     //新增、修改
     if (record.id) {
-      getDictById(record.id).then((resp: any) => {
-        dictForm.form = resp.data
+      get{{ .StructName }}ById(record.id).then((resp: any) => {
+        {{ .FileName }}Form.form = resp.data
       })
       //修改
-      dictForm.title = '修改字典'
-      dictForm.visible = true
+      {{ .FileName }}Form.title = '修改{{ .TableComment }}'
+      {{ .FileName }}Form.visible = true
       return
     }
-    dictForm.reset()
-    dictForm.title = '新增字典'
-    dictForm.visible = true
+    {{ .FileName }}Form.reset()
+    {{ .FileName }}Form.title = '新增{{ .TableComment }}'
+    {{ .FileName }}Form.visible = true
   },
   confirm: () => {
     //确认保存或者新建
-    dictFormRef.value.validate().then(() => {
-      if (dictForm.form.id) {
+    {{ .FileName }}Ref.value.validate().then(() => {
+      if ({{ .FileName }}Form.form.id) {
         //修改
-        modifyDict(dictForm.form, dictForm.form.id).then((resp: any) => {
+        modify{{ .StructName }}({{ .FileName }}Form.form, {{ .FileName }}Form.form.id).then((resp: any) => {
           message.success(resp.msg)
-          dictForm.visible = false
+          {{ .FileName }}Form.visible = false
           table.load()
         })
         return
       }
 
       //新建
-      addDict(dictForm.form).then((resp: any) => {
+      add{{ .StructName }}({{ .FileName }}Form.form).then((resp: any) => {
         message.success(resp.msg)
-        dictForm.visible = false
+        {{ .FileName }}Form.visible = false
         table.load()
       })
     })
   },
-  remove: (record: Dict) => {
+  remove: (record: {{ .StructName }}) => {
     let ids: number[] | string[] = []
     if (!record.id) {
       ids = table.selectedRowKeys
@@ -83,12 +87,12 @@ const dictForm = reactive({
       ids = [record.id]
     }
     Modal.confirm({
-      title: `确定要删除该ID为${JSON.stringify(ids)}字典吗？`,
+      title: `确定要删除该ID为${JSON.stringify(ids)}{{ .TableComment }}吗？`,
       centered: true,
       cancelText: '取消',
       okText: '确认',
       onOk: () => {
-        removeDictById(ids).then((resp: any) => {
+        remove{{ .StructName }}ById(ids).then((resp: any) => {
           message.success(resp.msg)
           table.load()
         })
@@ -97,21 +101,24 @@ const dictForm = reactive({
   },
 })
 const table = reactive({
-  list: [] as Dict[],
+  list: [] as {{ .StructName }}[],
   total: 0,
   loading: true,
   params: {
-    dictName: '',
+    {{ range $val := .GenerateColumns }}{{ if $val.IsQuery}}
+    //{{ $val.ColumnLabel }}
+    {{ $val.JsonName}}: null,{{end}}{{end}}
+
     page: 1,
     size: 10,
-  } as DictQuery,
+  } as {{ .StructName }}Query,
   visible: true,
   selectedRowKeys: [] as string[] | number[],
   load: () => {
     //加载
     table.loading = true
-    getDictList(table.params).then((resp: any) => {
-      const data = resp.data as PageResult<Dict>
+    get{{ .StructName }}List(table.params).then((resp: any) => {
+      const data = resp.data as PageResult<{{ .StructName }}>
       table.list = data.list
       table.total = data.total
       table.loading = false
@@ -119,10 +126,13 @@ const table = reactive({
   },
   reset: () => {
     table.params = {
-      dictName: '',
+      {{ range $val := .GenerateColumns }}{{ if $val.IsQuery}}
+      //{{ $val.ColumnLabel }}
+      {{ $val.JsonName}}: null,{{end}}{{end}}
+
       page: 1,
       size: 10,
-    } as DictQuery
+    } as {{ .StructName }}Query
     table.load()
   },
   select: (selectedRowKeys: string[] | number[]) => {
@@ -143,7 +153,7 @@ const table = reactive({
       okText: '确认',
       cancelText: '取消',
       onOk: () => {
-        exportDict(table.params, table.selectedRowKeys).then(() => {})
+        export{{ .StructName }}(table.params, table.selectedRowKeys).then(() => {})
       },
     })
   },
@@ -154,18 +164,15 @@ const table = reactive({
       key: 'id',
       width: 50,
     },
+
+    {{ range $val := .GenerateColumns }}{{ if $val.IsShow}}
     {
-      title: '字典名称',
-      dataIndex: 'dictName',
-      key: 'dictName',
-      width: 150,
-    },
-    {
-      title: '字典编码',
-      dataIndex: 'dictCode',
-      key: 'dictCode',
-      width: 150,
-    },
+      title: '{{ $val.ColumnLabel }}',
+      dataIndex: '{{ $val.JsonName }}',
+      key: '{{ $val.JsonName }}',
+      width: 180,
+    },{{end}}{{end}}
+
     {
       title: '创建时间',
       dataIndex: 'createTime',
@@ -213,11 +220,13 @@ onMounted(() => {
     <LayoutContainer v-if="table.visible" class="">
       <a-form :label-col="{ style: { width: '120px' } }">
         <a-row class="pt-3">
+          {{ range $val := .GenerateColumns }}{{ if $val.IsQuery}}
           <a-col :span="6">
-            <a-form-item label="字典名称">
-              <a-input v-model:value="table.params.dictName"></a-input>
+            <a-form-item label="{{ $val.ColumnLabel }}">
+              <a-input v-model:value="table.params.{{ $val.JsonName}}"></a-input>
             </a-form-item>
           </a-col>
+          {{end}}{{end}} 
           <a-col span="6">
             <a-space class="ml-4">
               <a-button @click="table.load">
@@ -242,17 +251,17 @@ onMounted(() => {
     <LayoutContainer show-title>
       <template #right>
         <a-space class="mb-1">
-          <a-button @click="dictForm.edit">
+          <a-button @click="{{ .FileName }}Form.edit">
             <template #icon>
               <PlusOutlined />
             </template>
-            新增字典
+            新增{{ .TableComment }}
           </a-button>
-          <a-button @click="dictForm.remove" :disabled="!table.selectedRowKeys.length">
+          <a-button @click="{{ .FileName }}Form.remove" :disabled="!table.selectedRowKeys.length">
             <template #icon>
               <DeleteOutlined />
             </template>
-            删除字典
+            删除{{ .TableComment }}
           </a-button>
           <a-button @click="table.export">
             <template #icon>
@@ -286,21 +295,21 @@ onMounted(() => {
       >
         <template #bodyCell="{ record, column }">
           <template v-if="['createTime', 'updateTime'].includes(column.key)">
-            {{
+            webTemplate-start
               record[column.key]
                 ? dayjs(new Date(record[column.key])).format('YYYY-MM-DD HH:mm:ss')
                 : '无'
-            }}
+            webTemplate-end
           </template>
           <template v-if="column.key === 'operation'">
             <a-space>
-              <a-button @click="dictForm.edit(record)" type="link">
+              <a-button @click="{{ .FileName }}Form.edit(record)" type="link">
                 <template #icon>
                   <EditOutlined />
                 </template>
                 修改
               </a-button>
-              <a-button @click="dictForm.remove(record)" type="link">
+              <a-button @click="{{ .FileName }}Form.remove(record)" type="link">
                 <DeleteOutlined />
                 删除
               </a-button>
@@ -319,34 +328,32 @@ onMounted(() => {
       </div>
     </LayoutContainer>
     <a-drawer
-      :title="dictForm.title"
+      :title="{{ .FileName }}Form.title"
       :close-icon="null"
-      v-model:open="dictForm.visible"
+      v-model:open="{{ .FileName }}Form.visible"
       width="800"
     >
       <template #extra>
         <a-space>
-          <a-button @click="dictForm.visible = false">取消</a-button>
-          <a-button type="primary" @click="dictForm.confirm">确认</a-button>
+          <a-button @click="{{ .FileName }}Form.visible = false">取消</a-button>
+          <a-button type="primary" @click="{{ .FileName }}Form.confirm">确认</a-button>
         </a-space>
       </template>
       <a-form
-        ref="dictFormRef"
-        :model="dictForm.form"
-        :rules="dictForm.rules"
+        ref="{{ .FileName }}Ref"
+        :model="{{ .FileName }}Form.form"
+        :rules="{{ .FileName }}Form.rules"
         :label-col="{ style: { width: '100px' } }"
       >
         <a-row>
-          <a-col span="12">
-            <a-form-item label="字典名称" name="dictName">
-              <a-input v-model:value="dictForm.form.dictName" placeholder="请输入字典名称" />
+          {{$fileName := .FileName }}
+          {{ range $val := .GenerateColumns }}{{ if $val.IsQuery}}
+          <a-col :span="12">
+            <a-form-item label="{{ $val.ColumnLabel }}" name="{{ $val.JsonName }}">
+              <a-input v-model:value="{{ $fileName }}Form.form.{{ $val.JsonName }}" placeholder="请输入{{ $val.ColumnLabel }}" />
             </a-form-item>
           </a-col>
-          <a-col span="12">
-            <a-form-item label="字典编码" name="dictCode">
-              <a-input v-model:value="dictForm.form.dictCode" placeholder="请输入字典编码" />
-            </a-form-item>
-          </a-col>
+          {{end}}{{end}} 
         </a-row>
       </a-form>
     </a-drawer>

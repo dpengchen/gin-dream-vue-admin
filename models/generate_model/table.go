@@ -8,11 +8,13 @@ type GenerateTable struct {
 	GenerateVersion  string            `json:"generateVersion" gorm:"生成版本"`
 	GenerateBasePath string            `json:"generateBasePath" gorm:"生成基础目录默认v1都放在v1目录下"`
 	StructName       string            `json:"structName" gorm:"comment:结构体名称"`
+	FileName         string            `json:"fileName" gorm:"comment:文件名（小驼峰）"`
+	FolderName       string            `json:"folderName" gorm:"comment:文件夹名（小写下划线）"`
 	TableComment     string            `json:"tableComment" gorm:"comment:表描述"`
 	SoftDelete       bool              `json:"softDelete" gorm:"comment:软删除"`
 	PrivateData      bool              `json:"privateData" gorm:"comment:私有数据"`
 	GenerateColumns  []GenerateColumns `json:"generateColumns" gorm:"comment:关联字段"`
-	Relation         uint              `json:"relation" gorm:"comment:表关系"`
+	Relation         string            `json:"relation" gorm:"comment:表关系"`
 	GenerateTableID  *uint             `json:"generateTableId" gorm:"comment:关联表"`
 	GenerateTable    *GenerateTable    `json:"generateTable"`
 }
@@ -26,6 +28,7 @@ type GenerateColumns struct {
 	SqlName         string `json:"sqlName" gorm:"comment:sql字段名"`
 	ColumnLabel     string `json:"columnLabel" gorm:"comment:字段标签"`
 	ColumnType      string `json:"columnType" gorm:"comment:字段类型"`
+	TsType          string `json:"tsType" gorm:"comment:ts类型"`
 	InputType       string `json:"inputType" gorm:"comment:输入类型"`
 	SqlType         string `json:"sqlType" gorm:"comment:sql类型"`
 	DictId          uint   `json:"dictId" gorm:"comment:字典id"`
@@ -37,4 +40,11 @@ type GenerateColumns struct {
 	IsSort          bool   `json:"isSort" gorm:"comment:是否可排序"`
 	SortType        string `json:"sortType" gorm:"comment:排序条件类型"`
 	IsRequired      bool   `json:"isRequired" gorm:"comment:是否必填"`
+}
+
+// GenerateTableQuery 生成表查询参数
+type GenerateTableQuery struct {
+	GenerateVersion string `json:"generateVersion" form:"generateVersion"`
+	TableComment    string `json:"tableComment" form:"tableComment"`
+	core.BaseQuery
 }

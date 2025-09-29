@@ -4,6 +4,8 @@ export interface GenerateTable extends DreamModel {
   generateVersion: string
   generateBasePath: string
   structName: string
+  fileName: string
+  folderName: string
   tableComment: string
   softDelete: boolean
   privateData: boolean
@@ -21,6 +23,7 @@ export interface GenerateColumns {
   sqlName?: string | null
   columnLabel?: string | null
   columnType?: string | null
+  tsType?: string | null
   inputType?: string | null
   sqlType?: string | null
   dictId?: number | null

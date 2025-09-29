@@ -57,7 +57,7 @@ func Auth() gin.HandlerFunc {
 		//设置当前用户id到上下文
 		userInfoStr := loginCache.Val()
 		userId, _ := strconv.Atoi(sub)
-		c.Set(constants.GinContextLoginUserIdKey, userId)
+		c.Set(constants.GinContextLoginUserIdKey, uint(userId))
 		//TODO 后期这里更改为结构体而不是字符串
 		c.Set(constants.GinContextLoginUserInfoKey, userInfoStr)
 

@@ -23,7 +23,7 @@ func (s *GeneratorTableServer) Create(c *gin.Context, reqData *generate_model.Ge
 	//设置创建时间
 	var now = time.Now()
 	reqData.CreateTime = &now
-	reqData.CreateBy = c.GetInt(constants.GinContextLoginUserIdKey)
+	reqData.CreateBy = c.GetUint(constants.GinContextLoginUserIdKey)
 	return global.Db.Preload("GenerateColumns").Create(reqData).Error
 }
 
@@ -46,7 +46,7 @@ func (s *GeneratorTableServer) Remove(c *gin.Context, id string) error {
 func (s *GeneratorTableServer) Modify(c *gin.Context, id string, data *generate_model.GenerateTable) error {
 	var err error
 	var count int64
-	data.UpdateBy = c.GetInt(constants.GinContextLoginUserIdKey)
+	data.UpdateBy = c.GetUint(constants.GinContextLoginUserIdKey)
 	now := time.Now()
 	data.UpdateTime = &now
 

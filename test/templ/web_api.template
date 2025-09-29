@@ -1,0 +1,57 @@
+import request from '@/api/request.ts'
+import type { {{ .StructName }}, {{ .StructName }}Query } from '@/interface/{{ .GenerateBasePath }}/{{ .StructName }}'
+
+const baseURL = '/v1/{{ .GenerateBasePath }}/{{ .StructName }}'
+//添加{{ .TableComment }}
+export const add{{ .StructName }} = (data: {{ .StructName }}) => {
+  return request({
+    url: baseURL,
+    method: 'POST',
+    data: data,
+  })
+}
+
+//删除{{ .TableComment }}通过ID
+export const remove{{ .StructName }}ById = (ids: string[] | number[]) => {
+  return request({
+    url: `${baseURL}`,
+    method: 'DELETE',
+    data: ids,
+  })
+}
+
+//修改{{ .TableComment }}
+export const modify{{ .StructName }} = (data: {{ .StructName }}, id: number) => {
+  return request({
+    url: `${baseURL}/${id}`,
+    method: 'PUT',
+    data: data,
+  })
+}
+
+//获取{{ .TableComment }}通过ID
+export const get{{ .StructName }}List = (params: {{ .StructName }}Query) => {
+  return request({
+    url: `${baseURL}/list`,
+    method: 'GET',
+    params: params,
+  })
+}
+
+//获取{{ .TableComment }}通过ID
+export const get{{ .StructName }}ById = (id: number) => {
+  return request({
+    url: `${baseURL}/${id}`,
+    method: 'GET',
+  })
+}
+
+//导出{{ .TableComment }} 如果有选择ids则导出对应的记录，如果没有则导出符合搜索条件的所有记录
+export const export{{ .StructName }} = (params: {{ .StructName }}Query, ids: number[] | string[]) => {
+  return request({
+    url: `${baseURL}/export`,
+    method: 'POST',
+    data: ids,
+    params: params,
+  })
+}

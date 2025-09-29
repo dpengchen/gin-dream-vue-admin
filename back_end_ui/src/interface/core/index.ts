@@ -8,3 +8,16 @@ export interface DreamModel {
   deleteBy?: number | null
   deleteTime?: string | null
 }
+
+export interface PageParams {
+  page?:number
+  size?:number
+}
+
+export interface PageResult<T> {
+  list: T[]
+  total: number
+  totalPage: number,
+  page: number,
+  size: number
+}

@@ -25,7 +25,7 @@ func SuccessWithMsg(c *gin.Context, msg string) {
 	Custom(c, http.StatusOK, http.StatusOK, msg, nil)
 }
 func Success(c *gin.Context, data any) {
-	Custom(c, http.StatusOK, http.StatusOK, "success", data)
+	Custom(c, http.StatusOK, http.StatusOK, "操作成功！", data)
 }
 
 func Fail(c *gin.Context, code int, msg string) {

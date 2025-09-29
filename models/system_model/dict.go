@@ -9,6 +9,12 @@ type Dict struct {
 	DictCode string `json:"dictCode" gorm:"comment:字典编码"`
 }
 
+// DictQuery 字典查询参数
+type DictQuery struct {
+	core.BaseQuery
+	DictName string `json:"dictName" form:"dictName" gorm:"comment:字典名称"`
+}
+
 // DictValue 字典值
 type DictValue struct {
 	core.DreamModel

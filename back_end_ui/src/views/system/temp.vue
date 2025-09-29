@@ -9,73 +9,81 @@ import {
   EditOutlined,
   SearchOutlined,
 } from '@ant-design/icons-vue'
-import type { Dict, DictQuery } from '@/interface/system/dict'
+import type { SysUser, SysUserQuery } from '@/interface/system/sys_user'
 import { message, Modal } from 'ant-design-vue'
 import {
-  addDict,
-  exportDict,
-  getDictById,
-  getDictList,
-  modifyDict,
-  removeDictById,
-} from '@/api/system/dict'
+  addSysUser,
+  exportSysUser,
+  getSysUserById,
+  getSysUserList,
+  modifySysUser,
+  removeSysUserById,
+} from '@/api/system/sys_user'
 import type { PageResult } from '@/interface/core'
 import dayjs from 'dayjs'
 
-const dictFormRef = ref()
-const dictForm = reactive({
-  form: {} as Dict, //表单数据
+const sysUserRef = ref()
+const sysUserForm = reactive({
+  form: {} as SysUser, //表单数据
   rules: {
-    dictCode: [{ required: true, message: '字典编码不能为空', trigger: 'blur' }],
-    dictName: [{ required: true, message: '字典名称不能为空', trigger: 'blur' }],
+
+    //用户名
+    username: [{ required: true, message: '用户名不能为空', trigger: 'blur' }],
+
   }, //校验规则
   visible: false, //drawer 抽屉显示
-  title: '新增字典', //标题
+  title: '新增系统用户', //标题
   reset: () => {
     //重置表单
-    dictForm.form = {
+    sysUserForm.form = {
       id: null,
-      dictCode: '',
-      dictName: '',
-    } as Dict
+
+      //用户名
+      username: null,
+      //密码
+      password: null,
+      //昵称
+      nickname: null,
+
+    } as SysUser
   },
   edit: (record: any) => {
     //新增、修改
     if (record.id) {
-      getDictById(record.id).then((resp: any) => {
-        dictForm.form = resp.data
+      getSysUserById(record.id).then((resp: any) => {
+        sysUserForm.form = resp.data
       })
       //修改
-      dictForm.title = '修改字典'
-      dictForm.visible = true
+      sysUserForm.title = '修改系统用户'
+      sysUserForm.visible = true
       return
     }
-    dictForm.reset()
-    dictForm.title = '新增字典'
-    dictForm.visible = true
+    sysUserForm.reset()
+    sysUserForm.title = '新增系统用户'
+    sysUserForm.visible = true
   },
   confirm: () => {
     //确认保存或者新建
-    dictFormRef.value.validate().then(() => {
-      if (dictForm.form.id) {
+    sysUserRef.value.validate().then(() => {
+      if (sysUserForm.form.id) {
         //修改
-        modifyDict(dictForm.form, dictForm.form.id).then((resp: any) => {
+        modifySysUser(sysUserForm.form, sysUserForm.form.id).then((resp: any) => {
           message.success(resp.msg)
-          dictForm.visible = false
+          sysUserForm.visible = false
           table.load()
         })
         return
       }
 
       //新建
-      addDict(dictForm.form).then((resp: any) => {
+      addSysUser(sysUserForm.form).then((resp: any) => {
         message.success(resp.msg)
-        dictForm.visible = false
+        sysUserForm.visible = false
         table.load()
       })
     })
   },
-  remove: (record: Dict) => {
+  remove: (record: SysUser) => {
     let ids: number[] | string[] = []
     if (!record.id) {
       ids = table.selectedRowKeys
@@ -83,12 +91,12 @@ const dictForm = reactive({
       ids = [record.id]
     }
     Modal.confirm({
-      title: `确定要删除该ID为${JSON.stringify(ids)}字典吗？`,
+      title: `确定要删除该ID为${JSON.stringify(ids)}系统用户吗？`,
       centered: true,
       cancelText: '取消',
       okText: '确认',
       onOk: () => {
-        removeDictById(ids).then((resp: any) => {
+        removeSysUserById(ids).then((resp: any) => {
           message.success(resp.msg)
           table.load()
         })
@@ -97,21 +105,26 @@ const dictForm = reactive({
   },
 })
 const table = reactive({
-  list: [] as Dict[],
+  list: [] as SysUser[],
   total: 0,
   loading: true,
   params: {
-    dictName: '',
+
+    //用户名
+    username: null,
+    //昵称
+    nickname: null,
+
     page: 1,
     size: 10,
-  } as DictQuery,
+  } as SysUserQuery,
   visible: true,
   selectedRowKeys: [] as string[] | number[],
   load: () => {
     //加载
     table.loading = true
-    getDictList(table.params).then((resp: any) => {
-      const data = resp.data as PageResult<Dict>
+    getSysUserList(table.params).then((resp: any) => {
+      const data = resp.data as PageResult<SysUser>
       table.list = data.list
       table.total = data.total
       table.loading = false
@@ -119,10 +132,15 @@ const table = reactive({
   },
   reset: () => {
     table.params = {
-      dictName: '',
+
+      //用户名
+      username: null,
+      //昵称
+      nickname: null,
+
       page: 1,
       size: 10,
-    } as DictQuery
+    } as SysUserQuery
     table.load()
   },
   select: (selectedRowKeys: string[] | number[]) => {
@@ -143,7 +161,7 @@ const table = reactive({
       okText: '确认',
       cancelText: '取消',
       onOk: () => {
-        exportDict(table.params, table.selectedRowKeys).then(() => {})
+        exportSysUser(table.params, table.selectedRowKeys).then(() => {})
       },
     })
   },
@@ -154,18 +172,27 @@ const table = reactive({
       key: 'id',
       width: 50,
     },
+
+
     {
-      title: '字典名称',
-      dataIndex: 'dictName',
-      key: 'dictName',
-      width: 150,
+      title: '用户名',
+      dataIndex: 'username',
+      key: 'username',
+      width: 180,
     },
     {
-      title: '字典编码',
-      dataIndex: 'dictCode',
-      key: 'dictCode',
-      width: 150,
+      title: '密码',
+      dataIndex: 'password',
+      key: 'password',
+      width: 180,
     },
+    {
+      title: '昵称',
+      dataIndex: 'nickname',
+      key: 'nickname',
+      width: 180,
+    },
+
     {
       title: '创建时间',
       dataIndex: 'createTime',
@@ -213,11 +240,19 @@ onMounted(() => {
     <LayoutContainer v-if="table.visible" class="">
       <a-form :label-col="{ style: { width: '120px' } }">
         <a-row class="pt-3">
+
           <a-col :span="6">
-            <a-form-item label="字典名称">
-              <a-input v-model:value="table.params.dictName"></a-input>
+            <a-form-item label="用户名">
+              <a-input v-model:value="table.params.username"></a-input>
             </a-form-item>
           </a-col>
+
+          <a-col :span="6">
+            <a-form-item label="昵称">
+              <a-input v-model:value="table.params.nickname"></a-input>
+            </a-form-item>
+          </a-col>
+
           <a-col span="6">
             <a-space class="ml-4">
               <a-button @click="table.load">
@@ -242,17 +277,17 @@ onMounted(() => {
     <LayoutContainer show-title>
       <template #right>
         <a-space class="mb-1">
-          <a-button @click="dictForm.edit">
+          <a-button @click="sysUserForm.edit">
             <template #icon>
               <PlusOutlined />
             </template>
-            新增字典
+            新增系统用户
           </a-button>
-          <a-button @click="dictForm.remove" :disabled="!table.selectedRowKeys.length">
+          <a-button @click="sysUserForm.remove" :disabled="!table.selectedRowKeys.length">
             <template #icon>
               <DeleteOutlined />
             </template>
-            删除字典
+            删除系统用户
           </a-button>
           <a-button @click="table.export">
             <template #icon>
@@ -294,13 +329,13 @@ onMounted(() => {
           </template>
           <template v-if="column.key === 'operation'">
             <a-space>
-              <a-button @click="dictForm.edit(record)" type="link">
+              <a-button @click="sysUserForm.edit(record)" type="link">
                 <template #icon>
                   <EditOutlined />
                 </template>
                 修改
               </a-button>
-              <a-button @click="dictForm.remove(record)" type="link">
+              <a-button @click="sysUserForm.remove(record)" type="link">
                 <DeleteOutlined />
                 删除
               </a-button>
@@ -319,34 +354,38 @@ onMounted(() => {
       </div>
     </LayoutContainer>
     <a-drawer
-      :title="dictForm.title"
+      :title="sysUserForm.title"
       :close-icon="null"
-      v-model:open="dictForm.visible"
+      v-model:open="sysUserForm.visible"
       width="800"
     >
       <template #extra>
         <a-space>
-          <a-button @click="dictForm.visible = false">取消</a-button>
-          <a-button type="primary" @click="dictForm.confirm">确认</a-button>
+          <a-button @click="sysUserForm.visible = false">取消</a-button>
+          <a-button type="primary" @click="sysUserForm.confirm">确认</a-button>
         </a-space>
       </template>
       <a-form
-        ref="dictFormRef"
-        :model="dictForm.form"
-        :rules="dictForm.rules"
+        ref="sysUserRef"
+        :model="sysUserForm.form"
+        :rules="sysUserForm.rules"
         :label-col="{ style: { width: '100px' } }"
       >
         <a-row>
-          <a-col span="12">
-            <a-form-item label="字典名称" name="dictName">
-              <a-input v-model:value="dictForm.form.dictName" placeholder="请输入字典名称" />
+
+
+          <a-col :span="12">
+            <a-form-item label="用户名" name="username">
+              <a-input v-model:value="sysUserForm.form.username" placeholder="请输入用户名" />
             </a-form-item>
           </a-col>
-          <a-col span="12">
-            <a-form-item label="字典编码" name="dictCode">
-              <a-input v-model:value="dictForm.form.dictCode" placeholder="请输入字典编码" />
+
+          <a-col :span="12">
+            <a-form-item label="昵称" name="nickname">
+              <a-input v-model:value="sysUserForm.form.nickname" placeholder="请输入昵称" />
             </a-form-item>
           </a-col>
+
         </a-row>
       </a-form>
     </a-drawer>
