@@ -6,7 +6,12 @@ import { PlusOutlined, SaveOutlined, EyeOutlined } from '@ant-design/icons-vue'
 import IconPackAdapter from '@/components/IconPackAdapter.vue'
 import type { GenerateColumns, GenerateTable } from '@/interface/generate'
 import { message } from 'ant-design-vue'
-import { addGenerateTable, generateTable, getGenerateTableById } from '@/api/generate/table'
+import {
+  addGenerateTable,
+  generateTable,
+  getGenerateTableById,
+  modifyGenerateTable,
+} from '@/api/generate/table'
 import { useRoute } from 'vue-router'
 
 const table = reactive({
@@ -164,8 +169,14 @@ const tableForm = reactive({
       console.log(tableForm.form.folderName)
 
       tableForm.form.generateColumns = table.list
+      if (tableForm.form.id) {
+        modifyGenerateTable(tableForm.form, tableForm.form.id).then((resp: any) => {
+          message.success(resp.msg)
+        })
+        return
+      }
       addGenerateTable(tableForm.form).then((resp) => {
-        console.log(resp)
+        message.success(resp.msg)
       })
     })
   },

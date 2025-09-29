@@ -57,8 +57,29 @@ func (s *GeneratorTableServer) Modify(c *gin.Context, id string, data *generate_
 	if err != nil {
 		return err
 	}
+	db := global.Db.Begin().Debug()
 
-	return global.Db.Model(&generate_model.GenerateTable{}).Where("id = ?", id).Select("*").Omit("create_by", "create_time").Updates(data).Error
+	//更新生成表数据
+	err = db.Model(&generate_model.GenerateTable{}).Where("id = ?", id).Select("*").Omit("create_by", "create_time").Updates(data).Error
+	if err != nil {
+		db.Rollback()
+		return err
+	}
+
+	err = db.Where("generate_table_id = ?", id).Delete(&generate_model.GenerateColumns{}).Error
+	if err != nil {
+		db.Rollback()
+		return err
+	}
+	if len(data.GenerateColumns) > 0 {
+		err = db.Model(&data).Association("GenerateColumns").Replace(data.GenerateColumns)
+		if err != nil {
+			db.Rollback()
+			return err
+		}
+	}
+	db.Commit()
+	return nil
 }
 
 // List 查询列表
