@@ -139,6 +139,9 @@ func writerFile(filePath string, writerContent string, line int) error {
 	if err != nil {
 		return errors.New("打开路由文件错误" + filePath + err.Error())
 	}
+	if strings.Index(string(content), writerContent) != -1 {
+		return nil
+	}
 	routerFile, _ := os.OpenFile(filePath, os.O_RDWR|os.O_TRUNC, 0666)
 	defer routerFile.Close()
 
