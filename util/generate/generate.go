@@ -4,7 +4,9 @@ import (
 	"bytes"
 	"dream-vue-admin/models/generate_model"
 	"embed"
+	"errors"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"strings"
@@ -21,6 +23,7 @@ func GeneratorTemplate(table *generate_model.GenerateTable) error {
 		log.Println("获取当前目录错误！", err.Error())
 	}
 
+	//后端代码生成
 	apiPath := fmt.Sprintf("%s/api/%s/%s/%s.go", dir, table.GenerateVersion, table.GenerateBasePath, table.FolderName)
 	modelPath := fmt.Sprintf("%s/models/%s/%s_model/%s.go", dir, table.GenerateVersion, table.GenerateBasePath, table.FolderName)
 	serverPath := fmt.Sprintf("%s/server/%s/%s_server/%s.go", dir, table.GenerateVersion, table.GenerateBasePath, table.FolderName)
@@ -42,6 +45,7 @@ func GeneratorTemplate(table *generate_model.GenerateTable) error {
 		return err
 	}
 
+	//前端代码生成
 	apiWebPath := fmt.Sprintf("%s/back_end_ui/src/api/%s/%s.ts", dir, table.GenerateBasePath, table.FolderName)
 	interfaceWebPath := fmt.Sprintf("%s/back_end_ui/src/interface/%s/%s.ts", dir, table.GenerateBasePath, table.FolderName)
 	viewWebPath := fmt.Sprintf("%s/back_end_ui/src/views/%s/%sView.vue", dir, table.GenerateBasePath, table.StructName)
@@ -58,7 +62,9 @@ func GeneratorTemplate(table *generate_model.GenerateTable) error {
 		return err
 	}
 
-	return nil
+	//注册后端路由和gorm
+	return registerRouterAndGorm(table, dir)
+
 }
 
 // saveFile 保存文件
@@ -102,5 +108,48 @@ func saveFile(table *generate_model.GenerateTable, filePath, fileName string) er
 	content = strings.ReplaceAll(content, "webTemplate-end", "}}")
 
 	_, err = file.Write([]byte(content))
+	return err
+}
+
+func registerRouterAndGorm(table *generate_model.GenerateTable, dir string) error {
+	var err error
+
+	//TODO 注册到路由数据库
+
+	//注册到路由文件中
+	err = writerFile(
+		fmt.Sprintf("%s/%s", dir, "router/initalize/v1.go"),
+		fmt.Sprintf("%s_router.Init%sRouter(group)", table.GenerateBasePath, table.StructName),
+		11,
+	)
+	if err != nil {
+		return err
+	}
+
+	//注册到gorm数据库中
+	return writerFile(
+		fmt.Sprintf("%s/%s", dir, "pkg/gorm/gorm.go"),
+		fmt.Sprintf("&%s_model.%s{},", table.GenerateBasePath, table.StructName),
+		54,
+	)
+}
+
+func writerFile(filePath string, writerContent string, line int) error {
+
+	routerFile, err := os.OpenFile(filePath, os.O_RDWR|os.O_APPEND|os.O_TRUNC, 0666)
+	if err != nil {
+		return errors.New("打开路由文件错误" + filePath + err.Error())
+	}
+	defer routerFile.Close()
+
+	//替换文件
+	content, _ := io.ReadAll(routerFile)
+	lines := strings.Split(string(content), "\n")
+	contentLines := append(lines[:line], writerContent)
+	contentLines = append(contentLines, lines[line:]...)
+
+	//清空routerFile，写入contentStr
+	_ = routerFile.Truncate(0)
+	_, err = routerFile.Write([]byte(strings.Join(contentLines, "\n")))
 	return err
 }
