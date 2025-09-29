@@ -347,7 +347,7 @@ onMounted(() => {
       >
         <a-row>
           {{$fileName := .FileName }}
-          {{ range $val := .GenerateColumns }}{{ if $val.IsQuery}}
+          {{ range $val := .GenerateColumns }}{{ if $val.IsEdit}}
           <a-col :span="12">
             <a-form-item label="{{ $val.ColumnLabel }}" name="{{ $val.JsonName }}">
               <a-input v-model:value="{{ $fileName }}Form.form.{{ $val.JsonName }}" placeholder="请输入{{ $val.ColumnLabel }}" />

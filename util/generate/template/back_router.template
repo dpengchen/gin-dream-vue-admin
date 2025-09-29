@@ -7,7 +7,7 @@ import (
 )
 
 func Init{{ .StructName }}Router({{ .GenerateVersion }}group *gin.RouterGroup) {
-	group := {{ .GenerateVersion }}group.Group("/{{ .GenerateBasePath }}/{{ .FileName }}")
+	group := {{ .GenerateVersion }}group.Group("/{{ .GenerateBasePath }}/{{ .FolderName }}")
 	api := {{ .GenerateBasePath }}.New{{ .StructName }}Api()
 	{
 		group.POST("", api.Create)
