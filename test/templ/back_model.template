@@ -1,0 +1,22 @@
+package {{ .GenerateBasePath }}_model
+
+import "dream-vue-admin/models/core"
+
+// {{ .StructName }} {{ .TableComment }}
+type {{ .StructName }} struct {
+	core.DreamModel
+    {{ range $val := .GenerateColumns }}
+    // {{ $val.StructName }} {{ $val.ColumnLabel}}
+    {{ $val.StructName}} {{ $val.ColumnType}} `json:"{{ $val.JsonName}}" gorm:"column:{{ $val.SqlName }};type:{{ $val.SqlType}};comment:{{ $val.ColumnLabel}}"`{{end}}
+
+}
+
+// {{ .StructName }}Query {{ .TableComment }}
+type {{ .StructName }}Query struct {
+	core.BaseQuery
+    {{ range $val := .GenerateColumns }}{{ if $val.IsQuery }}
+    // {{ $val.StructName }} {{ $val.ColumnLabel}}
+    {{ $val.StructName}} *{{ $val.ColumnType}} `json:"{{ $val.JsonName}}" gorm:"column:{{ $val.SqlName }};type:{{ $val.SqlType}};comment:{{ $val.ColumnLabel}}"`{{end}}{{end}}
+
+}
+

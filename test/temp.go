@@ -41,9 +41,7 @@ func (s *SysUserServer) Modify(c *gin.Context, id string, data *system_model.Sys
 	now := time.Now()
 	data.UpdateTime = &now
 
-    
-    userId := c.GetUint(constants.GinContextLoginUserIdKey)
-    
+	userId := c.GetUint(constants.GinContextLoginUserIdKey)
 
 	err = global.Db.Model(&system_model.SysUser{}).Where("id = ?", id).Where("create_by = ?", userId).Count(&count).Error
 	if errors.Is(err, gorm.ErrRecordNotFound) || count <= 0 {
@@ -62,23 +60,20 @@ func (s *SysUserServer) List(c *gin.Context, queryData *system_model.SysUserQuer
 	var total int64
 	var err error
 	db := global.Db.Model(&system_model.SysUser{})
-    
-    userId := c.GetUint(constants.GinContextLoginUserIdKey)
-    
+
+	userId := c.GetUint(constants.GinContextLoginUserIdKey)
 
 	//条件查询
-    
-    // 用户名
-    if (queryData.Username != null){
-        db = db.Where("username = ?", queryData.Username)
-    }
-    
-    // 昵称
-    if (queryData.Nickname != null){
-        db = db.Where("nickname = ?", queryData.Nickname)
-    }
-    
 
+	// 用户名
+	if queryData.Username != null {
+		db = db.Where("username = ?", queryData.Username)
+	}
+
+	// 昵称
+	if queryData.Nickname != null {
+		db = db.Where("nickname = ?", queryData.Nickname)
+	}
 
 	//只能查询到没有删除的数据，只有在私有数据可以进行
 	err = db.Where("create_by = ?", userId).Count(&total).Error
@@ -98,9 +93,9 @@ func (s *SysUserServer) List(c *gin.Context, queryData *system_model.SysUserQuer
 func (s *SysUserServer) GetById(c *gin.Context, id string) (*system_model.SysUser, error) {
 	var err error
 	var data system_model.SysUser
-    
-    userId := c.GetUint(constants.GinContextLoginUserIdKey)
-    
+
+	userId := c.GetUint(constants.GinContextLoginUserIdKey)
+
 	err = global.Db.Where("create_by = ?", userId).First(&data, id).Error
 	if err != nil {
 		return nil, err

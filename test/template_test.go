@@ -11,7 +11,7 @@ import (
 )
 
 func TestTemplate(t *testing.T) {
-	files, err := template.ParseFiles("./templ/web_view.template")
+	files, err := template.ParseFiles("./templ/back_server.template")
 
 	if err != nil {
 		log.Println(err.Error())
