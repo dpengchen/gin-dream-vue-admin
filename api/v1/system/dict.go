@@ -2,7 +2,7 @@ package system
 
 import (
 	"dream-vue-admin/global"
-	"dream-vue-admin/models/system_model"
+	"dream-vue-admin/models/v1/system_model"
 	"dream-vue-admin/server/v1/system_server"
 	"dream-vue-admin/util/constants"
 	"dream-vue-admin/util/http/response"

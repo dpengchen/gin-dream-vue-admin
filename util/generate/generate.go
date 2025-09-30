@@ -2,7 +2,7 @@ package generate
 
 import (
 	"bytes"
-	"dream-vue-admin/models/generate_model"
+	"dream-vue-admin/models/v1/generate_model"
 	"embed"
 	"errors"
 	"fmt"

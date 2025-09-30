@@ -2,7 +2,7 @@ package system_server
 
 import (
 	"dream-vue-admin/global"
-	"dream-vue-admin/models/system_model"
+	"dream-vue-admin/models/v1/system_model"
 	"dream-vue-admin/util/constants"
 	"errors"
 	"fmt"

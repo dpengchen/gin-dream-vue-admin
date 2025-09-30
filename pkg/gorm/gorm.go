@@ -2,8 +2,8 @@ package gorm
 
 import (
 	"dream-vue-admin/global"
-	"dream-vue-admin/models/generate_model"
-	"dream-vue-admin/models/system_model"
+	"dream-vue-admin/models/v1/generate_model"
+	"dream-vue-admin/models/v1/system_model"
 	"fmt"
 	"log"
 

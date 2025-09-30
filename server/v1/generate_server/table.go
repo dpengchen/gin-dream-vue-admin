@@ -2,7 +2,7 @@ package generate_server
 
 import (
 	"dream-vue-admin/global"
-	"dream-vue-admin/models/generate_model"
+	"dream-vue-admin/models/v1/generate_model"
 	"dream-vue-admin/util/constants"
 	"errors"
 	"time"
